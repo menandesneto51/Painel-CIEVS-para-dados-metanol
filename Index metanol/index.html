@@ -50,19 +50,9 @@
         setAnimateCards(true);
       }, []);
 
-      // Ícones por status
-      const getStatusIcon = (status) => {
-        if (status === "CONFIRMADO") return "⚠️";
-        if (status === "EM INVESTIGAÇÃO") return "🔍";
-        if (status === "DESCARTADO") return "✅";
-        return "ℹ️";
-      };
-
       // ======================
       // DADOS DOS CASOS (13 NOTIFICADOS)
       // 4 confirmados | 3 em investigação | 6 descartados
-      // Com residência, internação, gravidade, evolução,
-      // necessidade de hospitalização, permanência e antídoto
       // ======================
 
       // 4 confirmados (gravidade Grave)
@@ -84,6 +74,7 @@
           permaneceHospitalizado: "Não",
           recebeuAntidoto: "Sim",
           isObitoMetanol: false,
+          isObitoOutrasCausas: false,
         },
         {
           id: 10,
@@ -92,8 +83,7 @@
           municipioInternacao: "Várzea Grande",
           cidade: "Várzea Grande",
           perfil: "Feminino, 30 anos",
-          // texto clínico será o padrão de confirmado; a evolução traz o óbito por metanol
-          descricao: null,
+          descricao: "Paciente encaminhada por familiares já em óbito. Investigação conduzida pelo SVO.",
           statusColor: "bg-red-600",
           borderColor: "border-red-400",
           data: "06/11/2025",
@@ -102,7 +92,8 @@
           necessitouHospitalizacao: "Não",   // chegou já em óbito
           permaneceHospitalizado: "Não",
           recebeuAntidoto: "Não",
-          isObitoMetanol: true,              // MARCA COMO ÓBITO POR METANOL
+          isObitoMetanol: true,
+          isObitoOutrasCausas: false,
         },
         {
           id: 8,
@@ -121,6 +112,7 @@
           permaneceHospitalizado: "Não",
           recebeuAntidoto: "Não",
           isObitoMetanol: false,
+          isObitoOutrasCausas: false,
         },
         {
           id: 9,
@@ -139,6 +131,7 @@
           permaneceHospitalizado: "Sim",
           recebeuAntidoto: "Sim",
           isObitoMetanol: false,
+          isObitoOutrasCausas: false,
         },
       ];
 
@@ -161,6 +154,7 @@
           permaneceHospitalizado: "Sim",
           recebeuAntidoto: "Sim",
           isObitoMetanol: false,
+          isObitoOutrasCausas: false,
         },
         {
           id: 14,
@@ -179,6 +173,7 @@
           permaneceHospitalizado: "Sim",
           recebeuAntidoto: "Não",
           isObitoMetanol: false,
+          isObitoOutrasCausas: false,
         },
         {
           id: 2,
@@ -197,6 +192,7 @@
           permaneceHospitalizado: "Sim",
           recebeuAntidoto: "Sim",
           isObitoMetanol: false,
+          isObitoOutrasCausas: false,
         },
       ];
 
@@ -209,8 +205,7 @@
           municipioInternacao: "Nova Mutum",
           cidade: "Nova Mutum",
           perfil: "Masculino, 30 anos",
-          descricao:
-            "Exame toxicológico laboratorial negativo para metanol. Caso descartado clinicamente.",
+          descricao: "Exame toxicológico laboratorial negativo para metanol. Caso descartado clinicamente.",
           statusColor: "bg-green-700",
           borderColor: "border-green-400",
           data: "05/10/2025",
@@ -221,6 +216,7 @@
           permaneceHospitalizado: "Não",
           recebeuAntidoto: "Não",
           isObitoMetanol: false,
+          isObitoOutrasCausas: false,
         },
         {
           id: 4,
@@ -228,19 +224,19 @@
           municipioResidencia: "Várzea Grande",
           municipioInternacao: "Várzea Grande",
           cidade: "Várzea Grande",
-          perfil: "Masculino, 40 anos",
-          descricao:
-            "Exame toxicológico laboratorial negativo para metanol em amostra biológica. Caso descartado conforme critérios clínico-laboratoriais.",
+          perfil: "Masculino, 30 anos",   // corrigido de 40 para 30
+          descricao: "Exame toxicológico laboratorial negativo para metanol em amostra biológica.",
           statusColor: "bg-green-700",
           borderColor: "border-green-400",
           data: "24/10/2025",
-          tipo: "Óbito - Descartado",
+          tipo: "Descartado",
           gravidade: "Não se aplica",
-          evolucao: "Óbito por outras causas",
+          evolucao: "Caso descartado",   // retirado óbito
           necessitouHospitalizacao: "Sim",
           permaneceHospitalizado: "Não",
           recebeuAntidoto: "Sim",
           isObitoMetanol: false,
+          isObitoOutrasCausas: false,
         },
         {
           id: 5,
@@ -249,8 +245,7 @@
           municipioInternacao: "Cuiabá",
           cidade: "Cuiabá",
           perfil: "Feminino, 18 anos",
-          descricao:
-            "Exame toxicológico laboratorial negativo para metanol em amostra biológica. Caso descartado conforme critérios clínico-laboratoriais.",
+          descricao: "Exame toxicológico laboratorial negativo para metanol em amostra biológica.",
           statusColor: "bg-green-700",
           borderColor: "border-green-400",
           data: "28/10/2025",
@@ -261,6 +256,7 @@
           permaneceHospitalizado: "Não",
           recebeuAntidoto: "Não",
           isObitoMetanol: false,
+          isObitoOutrasCausas: false,
         },
         {
           id: 6,
@@ -269,8 +265,7 @@
           municipioInternacao: "Sorriso",
           cidade: "Sorriso",
           perfil: "Masculino, 30 anos",
-          descricao:
-            "Exame toxicológico laboratorial negativo para metanol em amostra biológica. Caso descartado conforme critérios clínico-laboratoriais.",
+          descricao: "Exame toxicológico laboratorial negativo para metanol em amostra biológica.",
           statusColor: "bg-green-700",
           borderColor: "border-green-400",
           data: "19/10/2025",
@@ -281,6 +276,7 @@
           permaneceHospitalizado: "Não",
           recebeuAntidoto: "Não",
           isObitoMetanol: false,
+          isObitoOutrasCausas: false,
         },
         {
           id: 7,
@@ -300,6 +296,7 @@
           permaneceHospitalizado: "Não",
           recebeuAntidoto: "Não",
           isObitoMetanol: false,
+          isObitoOutrasCausas: false,
         },
         {
           id: 11,
@@ -308,18 +305,18 @@
           municipioInternacao: "Várzea Grande",
           cidade: "Várzea Grande",
           perfil: "Masculino, 40 anos",
-          descricao:
-            "Exame toxicológico laboratorial negativo para metanol em amostra biológica. Caso descartado conforme critérios clínico-laboratoriais.",
+          descricao: "Exame toxicológico laboratorial negativo para metanol em amostra biológica.",
           statusColor: "bg-green-700",
           borderColor: "border-green-400",
           data: "22/10/2025",
           tipo: "Descartado",
           gravidade: "Não se aplica",
-          evolucao: "Caso descartado",
+          evolucao: "Óbito por outras causas",  // passou a óbito
           necessitouHospitalizacao: "Sim",
           permaneceHospitalizado: "Não",
-          recebeuAntidoto: "Não",
+          recebeuAntidoto: "Sim",
           isObitoMetanol: false,
+          isObitoOutrasCausas: true,
         },
       ];
 
@@ -337,12 +334,10 @@
       const totalEmInvestigacao = casosEmInvestigacao.length; // 3
       const totalDescartado = casosDescartados.length; // 6
 
-      // Óbitos por metanol (busca por "óbito" e "metanol" na evolução)
-      const totalObitosMetanol = todosCasos.filter((caso) => {
-        if (!caso.evolucao) return false;
-        const ev = caso.evolucao.toLowerCase();
-        return ev.includes("óbito") && ev.includes("metanol");
-      }).length;
+      // Óbitos por metanol
+      const totalObitosMetanol = todosCasos.filter(
+        (caso) => caso.isObitoMetanol
+      ).length;
 
       // Casos atualmente internados
       const totalInternadosAtualmente = todosCasos.filter(
@@ -492,18 +487,34 @@
                 onClick={() => setSelectedCase(caso)}
               >
                 <div className="flex items-start gap-3">
-                  <span
-                    className={
-                      caso.statusColor +
-                      " text-white text-xs font-bold px-3 py-1 rounded-full whitespace-nowrap flex items-center gap-1"
-                    }
-                  >
-                    <span>{getStatusIcon(caso.status)}</span>
-                    <span>{caso.status}</span>
-                  </span>
-
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={
+                        caso.statusColor +
+                        " text-white text-xs font-bold px-3 py-1 rounded-full whitespace-nowrap"
+                      }
+                    >
+                      {caso.status}
+                    </span>
+                    {caso.isObitoMetanol && (
+                      <span
+                        className="text-red-700 text-lg"
+                        title="Óbito confirmado por metanol"
+                      >
+                        ☠️
+                      </span>
+                    )}
+                    {!caso.isObitoMetanol && caso.isObitoOutrasCausas && (
+                      <span
+                        className="text-gray-700 text-lg"
+                        title="Óbito por outras causas"
+                      >
+                        ⚰️
+                      </span>
+                    )}
+                  </div>
                   <div className="flex-1">
-                    <div className="flex flex-wrap items-center gap-2 mb-1">
+                    <div className="flex items-center gap-2 mb-1">
                       <span className="text-gray-500 text-lg">📍</span>
                       <span className="font-semibold text-gray-800">
                         Residência: {caso.municipioResidencia || caso.cidade}
@@ -539,13 +550,6 @@
                       <span className="font-semibold">Recebeu antídoto:</span>{" "}
                       {formatStatusSimNao(caso.recebeuAntidoto)}
                     </p>
-
-                    {caso.isObitoMetanol && (
-                      <div className="mt-2 inline-flex items-center gap-1 px-2 py-1 rounded-full bg-black text-white text-[11px] font-semibold shadow-sm">
-                        <span>☠️</span>
-                        <span>ÓBITO CONFIRMADO POR METANOL</span>
-                      </div>
-                    )}
                   </div>
                 </div>
               </div>
@@ -594,26 +598,13 @@
 
           <div className="container mx-auto px-4 py-8">
             {/* Título */}
-            <div className="text-center mb-6">
+            <div className="text-center mb-8">
               <h1 className="text-3xl md:text-5xl font-bold text-gray-800 mb-2">
                 Painel de Monitoramento
               </h1>
               <p className="text-lg md:text-xl text-blue-600 font-semibold">
                 Intoxicação por Suspeita de Metanol (SES-MT)
               </p>
-            </div>
-
-            {/* Imagem de Cabeçalho (fixa) */}
-            <div className="mb-8">
-              <img
-                src="Cabeçalho.jpeg"
-                alt="Cabeçalho – Painel Metanol SES-MT"
-                className="w-full max-h-[260px] object-cover rounded-xl shadow-md border border-gray-200"
-                onError={(e) => {
-                  // Se a imagem não carregar, apenas esconde
-                  e.currentTarget.style.display = "none";
-                }}
-              />
             </div>
 
             {/* Barra de Atualização */}
@@ -900,15 +891,32 @@
                   </div>
                   <div className="space-y-6">
                     <div className="flex flex-wrap items-center gap-3">
-                      <span
-                        className={
-                          selectedCase.statusColor +
-                          " text-white text-sm font-bold px-4 py-2 rounded-full shadow-sm flex items-center gap-2"
-                        }
-                      >
-                        <span>{getStatusIcon(selectedCase.status)}</span>
-                        <span>{selectedCase.status}</span>
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span
+                          className={
+                            selectedCase.statusColor +
+                            " text-white text-sm font-bold px-4 py-2 rounded-full shadow-sm"
+                          }
+                        >
+                          {selectedCase.status}
+                        </span>
+                        {selectedCase.isObitoMetanol && (
+                          <span
+                            className="text-red-700 text-xl"
+                            title="Óbito confirmado por metanol"
+                          >
+                            ☠️
+                          </span>
+                        )}
+                        {!selectedCase.isObitoMetanol && selectedCase.isObitoOutrasCausas && (
+                          <span
+                            className="text-gray-700 text-xl"
+                            title="Óbito por outras causas"
+                          >
+                            ⚰️
+                          </span>
+                        )}
+                      </div>
                       {selectedCase.gravidade && (
                         <span
                           className={
@@ -917,12 +925,6 @@
                           }
                         >
                           Gravidade: {selectedCase.gravidade}
-                        </span>
-                      )}
-                      {selectedCase.isObitoMetanol && (
-                        <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-black text-white text-xs font-semibold shadow-sm">
-                          <span>☠️</span>
-                          <span>ÓBITO CONFIRMADO POR METANOL</span>
                         </span>
                       )}
                     </div>
