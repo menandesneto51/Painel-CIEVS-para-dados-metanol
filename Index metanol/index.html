@@ -53,7 +53,7 @@
       // ======================
       // DADOS DOS CASOS (13 NOTIFICADOS)
       // 4 confirmados | 3 em investigação | 6 descartados
-      // Com residência e internação separados
+      // Com residência, internação, gravidade e evolução
       // ======================
 
       // 4 confirmados
@@ -69,7 +69,8 @@
           statusColor: "bg-red-600",
           borderColor: "border-red-400",
           data: "20/10/2025",
-          gravidade: "Média",
+          gravidade: "Grave",
+          evolucao: "Em acompanhamento",
         },
         {
           id: 10,
@@ -78,24 +79,26 @@
           municipioInternacao: "Várzea Grande",
           cidade: "Várzea Grande",
           perfil: "Feminino, 30 anos",
-          descricao: "Paciente evoluiu para óbito após intoxicação por metanol.",
+          descricao: null, // usa texto padrão de confirmado
           statusColor: "bg-red-600",
           borderColor: "border-red-400",
           data: "06/11/2025",
-          gravidade: "Óbito",
+          gravidade: "Grave",
+          evolucao: "Óbito por intoxicação por metanol",
         },
         {
           id: 8,
           status: "CONFIRMADO",
           municipioResidencia: "Itanhangá",
-          municipioInternacao: "Itanhangá",
+          municipioInternacao: "Sorriso",
           cidade: "Itanhangá",
           perfil: "Masculino, 26 anos",
           descricao: null,
           statusColor: "bg-red-600",
           borderColor: "border-red-400",
           data: "03/11/2025",
-          gravidade: "Alta",
+          gravidade: "Grave",
+          evolucao: "Em acompanhamento",
         },
         {
           id: 9,
@@ -108,7 +111,8 @@
           statusColor: "bg-red-600",
           borderColor: "border-red-400",
           data: "03/11/2025",
-          gravidade: "Internada",
+          gravidade: "Grave",
+          evolucao: "Em acompanhamento",
         },
       ];
 
@@ -126,6 +130,7 @@
           borderColor: "border-yellow-400",
           data: "17/11/2025",
           gravidade: "Grave",
+          evolucao: "Em investigação",
         },
         {
           id: 14,
@@ -139,6 +144,7 @@
           borderColor: "border-yellow-400",
           data: "18/11/2025",
           gravidade: "Grave",
+          evolucao: "Em investigação",
         },
         {
           id: 2,
@@ -152,6 +158,7 @@
           borderColor: "border-yellow-400",
           data: "21/10/2025",
           gravidade: "Grave",
+          evolucao: "Em investigação",
         },
       ];
 
@@ -170,6 +177,8 @@
           borderColor: "border-green-400",
           data: "05/10/2025",
           tipo: "Descartado",
+          gravidade: "Não se aplica",
+          evolucao: "Caso descartado",
         },
         {
           id: 4,
@@ -184,6 +193,8 @@
           borderColor: "border-green-400",
           data: "24/10/2025",
           tipo: "Óbito - Descartado",
+          gravidade: "Não se aplica",
+          evolucao: "Óbito por outras causas",
         },
         {
           id: 5,
@@ -198,6 +209,8 @@
           borderColor: "border-green-400",
           data: "28/10/2025",
           tipo: "Descartado",
+          gravidade: "Não se aplica",
+          evolucao: "Caso descartado",
         },
         {
           id: 6,
@@ -212,6 +225,8 @@
           borderColor: "border-green-400",
           data: "19/10/2025",
           tipo: "Descartado",
+          gravidade: "Não se aplica",
+          evolucao: "Caso descartado",
         },
         {
           id: 7,
@@ -225,6 +240,8 @@
           borderColor: "border-green-400",
           data: "20/10/2025",
           tipo: "Descartado",
+          gravidade: "Não se aplica",
+          evolucao: "Caso descartado",
         },
         {
           id: 11,
@@ -239,6 +256,8 @@
           borderColor: "border-green-400",
           data: "22/10/2025",
           tipo: "Descartado",
+          gravidade: "Não se aplica",
+          evolucao: "Caso descartado",
         },
       ];
 
@@ -255,6 +274,11 @@
       const totalConfirmado = casosConfirmados.length; // 4
       const totalEmInvestigacao = casosEmInvestigacao.length; // 3
       const totalDescartado = casosDescartados.length; // 6
+
+      // Óbitos por metanol
+      const totalObitosMetanol = todosCasos.filter(
+        (caso) => caso.evolucao === "Óbito por intoxicação por metanol"
+      ).length;
 
       const kpiData = [
         {
@@ -289,12 +313,18 @@
           textColor: "text-green-700",
           iconColor: "text-green-600",
         },
+        {
+          label: "Óbitos por metanol",
+          value: totalObitosMetanol,
+          icon: "☠️",
+          borderColor: "border-gray-700",
+          textColor: "text-gray-800",
+          iconColor: "text-gray-700",
+        },
       ];
 
       // ======================
       // DISTRIBUIÇÃO POR MUNICÍPIO (MAPA)
-      // Referência epidemiológica = município de residência
-      // Tooltip/legenda mostram também internação
       // ======================
       const cidadesAfetadas = Object.values(
         todosCasos.reduce((acc, caso) => {
@@ -305,9 +335,9 @@
 
           if (!acc[nomeCidade]) {
             acc[nomeCidade] = {
-              cidade: nomeCidade,   // município de residência
+              cidade: nomeCidade,
               casos: 0,
-              internacoes: {},      // { localInternacao: quantidade }
+              internacoes: {},
             };
           }
 
@@ -324,20 +354,16 @@
       ).sort((a, b) => b.casos - a.casos);
 
       // ======================
-      // HELPERS DE RENDERIZAÇÃO
+      // HELPERS
       // ======================
 
       const getDescricaoPadrao = (caso) => {
-        // Padroniza TODOS os confirmados com o mesmo texto clínico-laboratorial
         if (caso.status === "CONFIRMADO") {
           return "Exame toxicológico laboratorial positivo para metanol em amostra biológica. Caso confirmado conforme critérios clínico-laboratoriais.";
         }
-
-        // Mantém descrições específicas, quando existirem
         if (caso.descricao) {
           return caso.descricao;
         }
-
         if (caso.status === "EM INVESTIGAÇÃO") {
           return "Aguardando resultado laboratorial.";
         }
@@ -347,6 +373,17 @@
         return "";
       };
 
+      const getGravidadeClasses = (gravidade) => {
+        if (gravidade === "Grave") {
+          return "bg-red-50 text-red-700 border-red-100";
+        }
+        if (gravidade === "Não se aplica") {
+          return "bg-gray-50 text-gray-700 border-gray-100";
+        }
+        return "bg-gray-50 text-gray-700 border-gray-100";
+      };
+
+      // LISTA DE CASOS (cards) – AGORA COM GRAVIDADE NO TEXTO
       const renderListaCasos = (lista, corBordaEsquerda) => (
         <div className={"bg-white p-6 rounded-xl shadow-lg border-l-8 " + corBordaEsquerda}>
           <div className="space-y-4">
@@ -382,6 +419,14 @@
                     <p className="text-sm text-gray-600 border-l-2 border-gray-300 pl-3">
                       {getDescricaoPadrao(caso)}
                     </p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      <span className="font-semibold">Evolução:</span> {caso.evolucao}
+                    </p>
+                    {caso.gravidade && (
+                      <p className="text-xs text-gray-500 mt-1">
+                        <span className="font-semibold">Gravidade:</span> {caso.gravidade}
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -451,7 +496,7 @@
             </div>
 
             {/* KPIs */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-10">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4 md:gap-6 mb-10">
               {kpiData.map((kpi, index) => (
                 <div
                   key={kpi.label}
@@ -478,7 +523,11 @@
                       {kpi.value}
                     </span>
                     <span className="text-xs md:text-base text-gray-600">
-                      {kpi.value === 1 ? "caso" : "casos"}
+                      {kpi.label.startsWith("Óbitos")
+                        ? (kpi.value === 1 ? "óbito" : "óbitos")
+                        : kpi.value === 1
+                        ? "caso"
+                        : "casos"}
                     </span>
                   </div>
                 </div>
@@ -604,9 +653,9 @@
                 <p className="text-sm text-gray-600 mb-6">
                   Proporção dos{" "}
                   <span className="font-semibold">{totalNotificado} casos notificados</span>{" "}
-                  distribuídos entre os municípios de residência dos pacientes. O segmento em vermelho indica
-                  o município com maior número de casos. A tooltip e a legenda apresentam também a
-                  distribuição dos locais de internação.
+                  distribuídos entre os municípios de residência dos pacientes. O segmento em vermelho
+                  indica o município com maior número de casos. A tooltip e a legenda apresentam
+                  também a distribuição dos locais de internação.
                 </p>
 
                 {/* Barra única empilhada */}
@@ -727,13 +776,7 @@
                         <span
                           className={
                             "px-3 py-1 rounded-full text-sm font-semibold border " +
-                            (selectedCase.gravidade === "Alta"
-                              ? "bg-red-50 text-red-700 border-red-100"
-                              : selectedCase.gravidade === "Média"
-                              ? "bg-yellow-50 text-yellow-700 border-yellow-100"
-                              : selectedCase.gravidade === "Óbito"
-                              ? "bg-gray-800 text-white border-gray-700"
-                              : "bg-gray-50 text-gray-700 border-gray-100")
+                            getGravidadeClasses(selectedCase.gravidade)
                           }
                         >
                           Gravidade: {selectedCase.gravidade}
@@ -776,6 +819,15 @@
                       </p>
                       <p className="text-gray-700 bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500 text-sm md:text-base leading-relaxed">
                         {getDescricaoPadrao(selectedCase)}
+                      </p>
+                    </div>
+
+                    <div>
+                      <p className="text-sm font-medium text-gray-500 mb-2">
+                        Evolução
+                      </p>
+                      <p className="text-gray-700 bg-gray-50 p-4 rounded-lg border-l-4 border-gray-400 text-sm md:text-base leading-relaxed">
+                        {selectedCase.evolucao}
                       </p>
                     </div>
                   </div>
