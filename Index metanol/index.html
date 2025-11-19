@@ -224,14 +224,14 @@
           municipioResidencia: "Várzea Grande",
           municipioInternacao: "Várzea Grande",
           cidade: "Várzea Grande",
-          perfil: "Masculino, 30 anos",   // corrigido de 40 para 30
-          descricao: "Exame toxicológico laboratorial negativo para metanol em amostra biológica.",
+          perfil: "Masculino, 30 anos",
+          descricao: "Exame toxicológico laboratorial negativo para metanol em amostra biológica. Caso descartado conforme critérios clínico-laboratoriais.",
           statusColor: "bg-green-700",
           borderColor: "border-green-400",
           data: "24/10/2025",
           tipo: "Descartado",
           gravidade: "Não se aplica",
-          evolucao: "Caso descartado",   // retirado óbito
+          evolucao: "Caso descartado",
           necessitouHospitalizacao: "Sim",
           permaneceHospitalizado: "Não",
           recebeuAntidoto: "Sim",
@@ -305,13 +305,13 @@
           municipioInternacao: "Várzea Grande",
           cidade: "Várzea Grande",
           perfil: "Masculino, 40 anos",
-          descricao: "Exame toxicológico laboratorial negativo para metanol em amostra biológica.",
+          descricao: "Exame toxicológico laboratorial negativo para metanol em amostra biológica. Caso descartado conforme critérios clínico-laboratoriais.",
           statusColor: "bg-green-700",
           borderColor: "border-green-400",
           data: "22/10/2025",
           tipo: "Descartado",
           gravidade: "Não se aplica",
-          evolucao: "Óbito por outras causas",  // passou a óbito
+          evolucao: "Caso descartado. Evoluiu para óbito por outras causas",
           necessitouHospitalizacao: "Sim",
           permaneceHospitalizado: "Não",
           recebeuAntidoto: "Sim",
@@ -666,7 +666,7 @@
               <button
                 onClick={() => setActiveTab("geral")}
                 className={
-                  "flex-1 min-w-[120px] px-4 py-3 rounded-lg font-semibold text-sm md:text-base transition-all duration-300 " +
+                  "flex-1 min-w-[120px] px-4 py-3 rounded-lg font-semibold text-sm md:text-base transition-all duração-300 " +
                   (activeTab === "geral"
                     ? "bg-blue-600 text-white shadow-lg transform scale-105"
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200")
@@ -677,7 +677,7 @@
               <button
                 onClick={() => setActiveTab("confirmados")}
                 className={
-                  "flex-1 min-w-[120px] px-4 py-3 rounded-lg font-semibold text-sm md:text-base transition-all duration-300 " +
+                  "flex-1 min-w-[120px] px-4 py-3 rounded-lg font-semibold text-sm md:text-base transition-all duração-300 " +
                   (activeTab === "confirmados"
                     ? "bg-red-600 text-white shadow-lg transform scale-105"
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200")
@@ -688,7 +688,7 @@
               <button
                 onClick={() => setActiveTab("investigacao")}
                 className={
-                  "flex-1 min-w-[120px] px-4 py-3 rounded-lg font-semibold text-sm md:text-base transition-all duration-300 " +
+                  "flex-1 min-w-[120px] px-4 py-3 rounded-lg font-semibold text-sm md:text-base transition-all duração-300 " +
                   (activeTab === "investigacao"
                     ? "bg-yellow-500 text-white shadow-lg transform scale-105"
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200")
@@ -699,7 +699,7 @@
               <button
                 onClick={() => setActiveTab("descartados")}
                 className={
-                  "flex-1 min-w-[120px] px-4 py-3 rounded-lg font-semibold text-sm md:text-base transition-all duration-300 " +
+                  "flex-1 min-w-[120px] px-4 py-3 rounded-lg font-semibold text-sm md:text-base transition-all duração-300 " +
                   (activeTab === "descartados"
                     ? "bg-green-600 text-white shadow-lg transform scale-105"
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200")
@@ -710,7 +710,7 @@
               <button
                 onClick={() => setActiveTab("mapa")}
                 className={
-                  "flex-1 min-w-[120px] px-4 py-3 rounded-lg font-semibold text-sm md:text-base transition-all duration-300 " +
+                  "flex-1 min-w-[120px] px-4 py-3 rounded-lg font-semibold text-sm md:text-base transition-all duração-300 " +
                   (activeTab === "mapa"
                     ? "bg-purple-600 text-white shadow-lg transform scale-105"
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200")
@@ -842,8 +842,7 @@
                     return (
                       <div
                         key={"legenda-" + cidade.cidade}
-                        className="flex items-center justify-between border border-gray-200 rounded-lg px-4 py-3 hover:bg-gray-50 transition-colors"
-                      >
+                        className="flex items-center justify-between border border-gray-200 rounded-lg px-4 py-3 hover:bg-gray-50 transition-colors">
                         <div className="flex items-center gap-3">
                           <span
                             className={
