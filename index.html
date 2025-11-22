@@ -55,7 +55,7 @@
       // 4 confirmados | 3 em investigação | 6 descartados
       // ======================
 
-      // 4 confirmados (gravidade Grave)
+      // 4 CONFIRMADOS (todos gravidade Grave)
       const casosConfirmados = [
         {
           id: 1,
@@ -83,13 +83,14 @@
           municipioInternacao: "Várzea Grande",
           cidade: "Várzea Grande",
           perfil: "Feminino, 30 anos",
-          descricao: "Paciente encaminhada por familiares já em óbito. Investigação conduzida pelo SVO.",
+          descricao:
+            "Paciente encaminhada por familiares já em óbito. Investigação conduzida pelo SVO.",
           statusColor: "bg-red-600",
           borderColor: "border-red-400",
           data: "06/11/2025",
           gravidade: "Grave",
           evolucao: "Óbito por intoxicação exógena confirmada por metanol",
-          necessitouHospitalizacao: "Não",   // chegou já em óbito
+          necessitouHospitalizacao: "Não", // chegou já em óbito
           permaneceHospitalizado: "Não",
           recebeuAntidoto: "Não",
           isObitoMetanol: true,
@@ -126,16 +127,16 @@
           borderColor: "border-red-400",
           data: "03/11/2025",
           gravidade: "Grave",
-          evolucao: "Permanece internada em Sorriso",
+          evolucao: "Óbito por intoxicação exógena confirmada por metanol",
           necessitouHospitalizacao: "Sim",
-          permaneceHospitalizado: "Sim",
+          permaneceHospitalizado: "Não",
           recebeuAntidoto: "Sim",
-          isObitoMetanol: false,
+          isObitoMetanol: true,
           isObitoOutrasCausas: false,
         },
       ];
 
-      // 3 em investigação (gravidade Grave)
+      // 3 EM INVESTIGAÇÃO (todos gravidade Grave)
       const casosEmInvestigacao = [
         {
           id: 13,
@@ -196,7 +197,7 @@
         },
       ];
 
-      // 6 descartados (gravidade Não se aplica)
+      // 6 DESCARTADOS (gravidade Não se aplica)
       const casosDescartados = [
         {
           id: 12,
@@ -205,7 +206,8 @@
           municipioInternacao: "Nova Mutum",
           cidade: "Nova Mutum",
           perfil: "Masculino, 30 anos",
-          descricao: "Exame toxicológico laboratorial negativo para metanol. Caso descartado clinicamente.",
+          descricao:
+            "Exame toxicológico laboratorial negativo para metanol. Caso descartado clinicamente.",
           statusColor: "bg-green-700",
           borderColor: "border-green-400",
           data: "05/10/2025",
@@ -224,8 +226,9 @@
           municipioResidencia: "Várzea Grande",
           municipioInternacao: "Várzea Grande",
           cidade: "Várzea Grande",
-          perfil: "Masculino, 30 anos",
-          descricao: "Exame toxicológico laboratorial negativo para metanol em amostra biológica. Caso descartado conforme critérios clínico-laboratoriais.",
+          perfil: "Masculino, 40 anos",
+          descricao:
+            "Exame toxicológico laboratorial negativo para metanol em amostra biológica. Caso descartado conforme critérios clínico-laboratoriais.",
           statusColor: "bg-green-700",
           borderColor: "border-green-400",
           data: "24/10/2025",
@@ -245,7 +248,8 @@
           municipioInternacao: "Cuiabá",
           cidade: "Cuiabá",
           perfil: "Feminino, 18 anos",
-          descricao: "Exame toxicológico laboratorial negativo para metanol em amostra biológica.",
+          descricao:
+            "Exame toxicológico laboratorial negativo para metanol em amostra biológica. Caso descartado conforme critérios clínico-laboratoriais.",
           statusColor: "bg-green-700",
           borderColor: "border-green-400",
           data: "28/10/2025",
@@ -265,7 +269,8 @@
           municipioInternacao: "Sorriso",
           cidade: "Sorriso",
           perfil: "Masculino, 30 anos",
-          descricao: "Exame toxicológico laboratorial negativo para metanol em amostra biológica.",
+          descricao:
+            "Exame toxicológico laboratorial negativo para metanol em amostra biológica. Caso descartado conforme critérios clínico-laboratoriais.",
           statusColor: "bg-green-700",
           borderColor: "border-green-400",
           data: "19/10/2025",
@@ -305,13 +310,14 @@
           municipioInternacao: "Várzea Grande",
           cidade: "Várzea Grande",
           perfil: "Masculino, 40 anos",
-          descricao: "Exame toxicológico laboratorial negativo para metanol em amostra biológica. Caso descartado conforme critérios clínico-laboratoriais.",
+          descricao:
+            "Exame toxicológico laboratorial negativo para metanol em amostra biológica. Caso descartado conforme critérios clínico-laboratoriais.",
           statusColor: "bg-green-700",
           borderColor: "border-green-400",
           data: "22/10/2025",
-          tipo: "Descartado",
+          tipo: "Óbito - Descartado",
           gravidade: "Não se aplica",
-          evolucao: "Caso descartado. Evoluiu para óbito por outras causas",
+          evolucao: "Óbito por outras causas",
           necessitouHospitalizacao: "Sim",
           permaneceHospitalizado: "Não",
           recebeuAntidoto: "Sim",
@@ -334,7 +340,7 @@
       const totalEmInvestigacao = casosEmInvestigacao.length; // 3
       const totalDescartado = casosDescartados.length; // 6
 
-      // Óbitos por metanol
+      // Óbitos por metanol (via flag)
       const totalObitosMetanol = todosCasos.filter(
         (caso) => caso.isObitoMetanol
       ).length;
@@ -487,7 +493,7 @@
                 onClick={() => setSelectedCase(caso)}
               >
                 <div className="flex items-start gap-3">
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-col items-center gap-1">
                     <span
                       className={
                         caso.statusColor +
@@ -498,18 +504,18 @@
                     </span>
                     {caso.isObitoMetanol && (
                       <span
-                        className="text-red-700 text-lg"
-                        title="Óbito confirmado por metanol"
+                        className="text-xs text-red-700 flex items-center gap-1"
+                        title="Óbito relacionado à intoxicação por metanol"
                       >
-                        ☠️
+                        ☠️ <span>Óbito por metanol</span>
                       </span>
                     )}
                     {!caso.isObitoMetanol && caso.isObitoOutrasCausas && (
                       <span
-                        className="text-gray-700 text-lg"
+                        className="text-xs text-gray-700 flex items-center gap-1"
                         title="Óbito por outras causas"
                       >
-                        ⚰️
+                        ✝️ <span>Óbito por outras causas</span>
                       </span>
                     )}
                   </div>
@@ -666,7 +672,7 @@
               <button
                 onClick={() => setActiveTab("geral")}
                 className={
-                  "flex-1 min-w-[120px] px-4 py-3 rounded-lg font-semibold text-sm md:text-base transition-all duração-300 " +
+                  "flex-1 min-w-[120px] px-4 py-3 rounded-lg font-semibold text-sm md:text-base transition-all duration-300 " +
                   (activeTab === "geral"
                     ? "bg-blue-600 text-white shadow-lg transform scale-105"
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200")
@@ -677,7 +683,7 @@
               <button
                 onClick={() => setActiveTab("confirmados")}
                 className={
-                  "flex-1 min-w-[120px] px-4 py-3 rounded-lg font-semibold text-sm md:text-base transition-all duração-300 " +
+                  "flex-1 min-w-[120px] px-4 py-3 rounded-lg font-semibold text-sm md:text-base transition-all duration-300 " +
                   (activeTab === "confirmados"
                     ? "bg-red-600 text-white shadow-lg transform scale-105"
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200")
@@ -688,7 +694,7 @@
               <button
                 onClick={() => setActiveTab("investigacao")}
                 className={
-                  "flex-1 min-w-[120px] px-4 py-3 rounded-lg font-semibold text-sm md:text-base transition-all duração-300 " +
+                  "flex-1 min-w-[120px] px-4 py-3 rounded-lg font-semibold text-sm md:text-base transition-all duration-300 " +
                   (activeTab === "investigacao"
                     ? "bg-yellow-500 text-white shadow-lg transform scale-105"
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200")
@@ -699,7 +705,7 @@
               <button
                 onClick={() => setActiveTab("descartados")}
                 className={
-                  "flex-1 min-w-[120px] px-4 py-3 rounded-lg font-semibold text-sm md:text-base transition-all duração-300 " +
+                  "flex-1 min-w-[120px] px-4 py-3 rounded-lg font-semibold text-sm md:text-base transition-all duration-300 " +
                   (activeTab === "descartados"
                     ? "bg-green-600 text-white shadow-lg transform scale-105"
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200")
@@ -710,7 +716,7 @@
               <button
                 onClick={() => setActiveTab("mapa")}
                 className={
-                  "flex-1 min-w-[120px] px-4 py-3 rounded-lg font-semibold text-sm md:text-base transition-all duração-300 " +
+                  "flex-1 min-w-[120px] px-4 py-3 rounded-lg font-semibold text-sm md:text-base transition-all duration-300 " +
                   (activeTab === "mapa"
                     ? "bg-purple-600 text-white shadow-lg transform scale-105"
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200")
@@ -842,7 +848,8 @@
                     return (
                       <div
                         key={"legenda-" + cidade.cidade}
-                        className="flex items-center justify-between border border-gray-200 rounded-lg px-4 py-3 hover:bg-gray-50 transition-colors">
+                        className="flex items-center justify-between border border-gray-200 rounded-lg px-4 py-3 hover:bg-gray-50 transition-colors"
+                      >
                         <div className="flex items-center gap-3">
                           <span
                             className={
@@ -890,32 +897,14 @@
                   </div>
                   <div className="space-y-6">
                     <div className="flex flex-wrap items-center gap-3">
-                      <div className="flex items-center gap-2">
-                        <span
-                          className={
-                            selectedCase.statusColor +
-                            " text-white text-sm font-bold px-4 py-2 rounded-full shadow-sm"
-                          }
-                        >
-                          {selectedCase.status}
-                        </span>
-                        {selectedCase.isObitoMetanol && (
-                          <span
-                            className="text-red-700 text-xl"
-                            title="Óbito confirmado por metanol"
-                          >
-                            ☠️
-                          </span>
-                        )}
-                        {!selectedCase.isObitoMetanol && selectedCase.isObitoOutrasCausas && (
-                          <span
-                            className="text-gray-700 text-xl"
-                            title="Óbito por outras causas"
-                          >
-                            ⚰️
-                          </span>
-                        )}
-                      </div>
+                      <span
+                        className={
+                          selectedCase.statusColor +
+                          " text-white text-sm font-bold px-4 py-2 rounded-full shadow-sm"
+                        }
+                      >
+                        {selectedCase.status}
+                      </span>
                       {selectedCase.gravidade && (
                         <span
                           className={
@@ -926,6 +915,23 @@
                           Gravidade: {selectedCase.gravidade}
                         </span>
                       )}
+                      {selectedCase.isObitoMetanol && (
+                        <span
+                          className="flex items-center gap-1 text-sm text-red-700 font-semibold"
+                          title="Óbito relacionado à intoxicação por metanol"
+                        >
+                          ☠️ Óbito por metanol
+                        </span>
+                      )}
+                      {!selectedCase.isObitoMetanol &&
+                        selectedCase.isObitoOutrasCausas && (
+                          <span
+                            className="flex items-center gap-1 text-sm text-gray-700 font-semibold"
+                            title="Óbito por outras causas"
+                          >
+                            ✝️ Óbito por outras causas
+                          </span>
+                        )}
                     </div>
 
                     <div className="bg-gray-50 rounded-lg p-4 border border-gray-100">
