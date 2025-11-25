@@ -51,11 +51,9 @@
       }, []);
 
       // ======================
-      // DADOS DOS CASOS (14 NOTIFICADOS)
-      // 4 confirmados | 4 em investigação | 6 descartados
+      // DADOS DOS CASOS
       // ======================
-
-      // 4 CONFIRMADOS (todos gravidade Grave)
+      // 4 confirmados (gravidade Grave)
       const casosConfirmados = [
         {
           id: 1,
@@ -136,7 +134,7 @@
         },
       ];
 
-      // 4 EM INVESTIGAÇÃO (todos gravidade Grave)
+      // 4 em investigação (gravidade Grave)
       const casosEmInvestigacao = [
         {
           id: 13,
@@ -159,25 +157,6 @@
         },
         {
           id: 14,
-          status: "EM INVESTIGAÇÃO",
-          municipioResidencia: "Cuiabá",
-          municipioInternacao: "Cuiabá",
-          cidade: "Cuiabá",
-          perfil: "Feminino, 26 anos",
-          descricao: "Aguardando resultado laboratorial.",
-          statusColor: "bg-yellow-500",
-          borderColor: "border-yellow-400",
-          data: "24/11/2025",
-          gravidade: "Grave",
-          evolucao: "Em investigação",
-          necessitouHospitalizacao: "Sim",
-          permaneceHospitalizado: "Sim",
-          recebeuAntidoto: "Sim",
-          isObitoMetanol: false,
-          isObitoOutrasCausas: false,
-        },
-        {
-          id: 15,
           status: "EM INVESTIGAÇÃO",
           municipioResidencia: "Querência",
           municipioInternacao: "Barra do Garças",
@@ -214,9 +193,29 @@
           isObitoMetanol: false,
           isObitoOutrasCausas: false,
         },
+        // Novo caso de Cuiabá (id 15 para evitar duplicidade)
+        {
+          id: 15,
+          status: "EM INVESTIGAÇÃO",
+          municipioResidencia: "Cuiabá",
+          municipioInternacao: "Cuiabá",
+          cidade: "Cuiabá",
+          perfil: "Feminino, 26 anos",
+          descricao: "Aguardando resultado laboratorial.",
+          statusColor: "bg-yellow-500",
+          borderColor: "border-yellow-400",
+          data: "24/11/2025",
+          gravidade: "Grave",
+          evolucao: "Em investigação",
+          necessitouHospitalizacao: "Sim",
+          permaneceHospitalizado: "Sim",
+          recebeuAntidoto: "Sim",
+          isObitoMetanol: false,
+          isObitoOutrasCausas: false,
+        },
       ];
 
-      // 6 DESCARTADOS (gravidade Não se aplica)
+      // 6 descartados (gravidade Não se aplica)
       const casosDescartados = [
         {
           id: 12,
@@ -245,7 +244,7 @@
           municipioResidencia: "Várzea Grande",
           municipioInternacao: "Várzea Grande",
           cidade: "Várzea Grande",
-          perfil: "Masculino, 40 anos",
+          perfil: "Masculino, 30 anos",
           descricao:
             "Exame toxicológico laboratorial negativo para metanol em amostra biológica. Caso descartado conforme critérios clínico-laboratoriais.",
           statusColor: "bg-green-700",
@@ -354,12 +353,12 @@
       // ======================
       // KPIs CALCULADOS
       // ======================
-      const totalNotificado = todosCasos.length; // 14
-      const totalConfirmado = casosConfirmados.length; // 4
-      const totalEmInvestigacao = casosEmInvestigacao.length; // 4
-      const totalDescartado = casosDescartados.length; // 6
+      const totalNotificado = todosCasos.length; // 4 + 4 + 6 = 14
+      const totalConfirmado = casosConfirmados.length;
+      const totalEmInvestigacao = casosEmInvestigacao.length;
+      const totalDescartado = casosDescartados.length;
 
-      // Óbitos por metanol (via flag)
+      // Óbitos por metanol
       const totalObitosMetanol = todosCasos.filter(
         (caso) => caso.isObitoMetanol
       ).length;
@@ -512,32 +511,18 @@
                 onClick={() => setSelectedCase(caso)}
               >
                 <div className="flex items-start gap-3">
-                  <div className="flex flex-col items-center gap-1">
-                    <span
-                      className={
-                        caso.statusColor +
-                        " text-white text-xs font-bold px-3 py-1 rounded-full whitespace-nowrap"
-                      }
-                    >
-                      {caso.status}
-                    </span>
-                    {caso.isObitoMetanol && (
-                      <span
-                        className="text-xs text-red-700 flex items-center gap-1"
-                        title="Óbito relacionado à intoxicação por metanol"
-                      >
-                        ☠️ <span>Óbito por metanol</span>
-                      </span>
-                    )}
-                    {!caso.isObitoMetanol && caso.isObitoOutrasCausas && (
-                      <span
-                        className="text-xs text-gray-700 flex items-center gap-1"
-                        title="Óbito por outras causas"
-                      >
-                        ✝️ <span>Óbito por outras causas</span>
-                      </span>
-                    )}
-                  </div>
+                  <span
+                    className={
+                      caso.statusColor +
+                      " text-white text-xs font-bold px-3 py-1 rounded-full whitespace-nowrap flex items-center gap-1"
+                    }
+                  >
+                    {caso.status === "CONFIRMADO" && "⚠️"}
+                    {caso.status === "EM INVESTIGAÇÃO" && "🔍"}
+                    {caso.status === "DESCARTADO" && "✅"}
+                    <span>{caso.status}</span>
+                  </span>
+
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
                       <span className="text-gray-500 text-lg">📍</span>
@@ -550,12 +535,28 @@
                         Internação: {caso.municipioInternacao}
                       </p>
                     )}
+
                     <p className="text-sm text-gray-500 mb-1">({caso.perfil})</p>
                     <p className="text-xs text-gray-400 mb-1">{caso.data}</p>
+
                     <p className="text-sm text-gray-600 border-l-2 border-gray-300 pl-3">
                       {getDescricaoPadrao(caso)}
                     </p>
-                    <p className="text-xs text-gray-500 mt-1">
+
+                    <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1">
+                      {caso.isObitoMetanol && (
+                        <span className="inline-flex items-center gap-1 text-xs font-semibold text-red-700 bg-red-50 border border-red-200 rounded-full px-2 py-0.5">
+                          ☠️ Óbito confirmado por metanol
+                        </span>
+                      )}
+                      {caso.isObitoOutrasCausas && (
+                        <span className="inline-flex items-center gap-1 text-xs font-semibold text-gray-700 bg-gray-50 border border-gray-200 rounded-full px-2 py-0.5">
+                          ⚫ Óbito por outras causas
+                        </span>
+                      )}
+                    </div>
+
+                    <p className="text-xs text-gray-500 mt-2">
                       <span className="font-semibold">Evolução:</span> {caso.evolucao}
                     </p>
                     {caso.gravidade && (
@@ -613,6 +614,18 @@
                   src="https://raw.githubusercontent.com/luishgm/imagens-para-projetos/main/logos/logo-governo-mato-grosso.png"
                   alt="Governo MT"
                   className="h-12 md:h-16 object-contain"
+                  onError={(e) => {
+                    e.currentTarget.style.display = "none";
+                  }}
+                />
+              </div>
+
+              {/* Imagem fixa de cabeçalho */}
+              <div className="mt-4">
+                <img
+                  src="Cabecalho.jpeg"
+                  alt="Cabeçalho COE Metanol SES-MT"
+                  className="w-full max-h-64 object-cover rounded-lg shadow-md"
                   onError={(e) => {
                     e.currentTarget.style.display = "none";
                   }}
@@ -906,7 +919,19 @@
                   onClick={(e) => e.stopPropagation()}
                 >
                   <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-2xl font-bold text-gray-800">Detalhes do Caso</h3>
+                    <h3 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                      Detalhes do Caso
+                      {selectedCase.isObitoMetanol && (
+                        <span className="inline-flex items-center gap-1 text-xs font-semibold text-red-700 bg-red-50 border border-red-200 rounded-full px-2 py-0.5">
+                          ☠️ Óbito confirmado por metanol
+                        </span>
+                      )}
+                      {selectedCase.isObitoOutrasCausas && (
+                        <span className="inline-flex items-center gap-1 text-xs font-semibold text-gray-700 bg-gray-50 border border-gray-200 rounded-full px-2 py-0.5">
+                          ⚫ Óbito por outras causas
+                        </span>
+                      )}
+                    </h3>
                     <button
                       onClick={() => setSelectedCase(null)}
                       className="text-gray-400 hover:text-gray-600 transition-colors text-3xl leading-none"
@@ -919,10 +944,13 @@
                       <span
                         className={
                           selectedCase.statusColor +
-                          " text-white text-sm font-bold px-4 py-2 rounded-full shadow-sm"
+                          " text-white text-sm font-bold px-4 py-2 rounded-full shadow-sm flex items-center gap-1"
                         }
                       >
-                        {selectedCase.status}
+                        {selectedCase.status === "CONFIRMADO" && "⚠️"}
+                        {selectedCase.status === "EM INVESTIGAÇÃO" && "🔍"}
+                        {selectedCase.status === "DESCARTADO" && "✅"}
+                        <span>{selectedCase.status}</span>
                       </span>
                       {selectedCase.gravidade && (
                         <span
@@ -934,23 +962,6 @@
                           Gravidade: {selectedCase.gravidade}
                         </span>
                       )}
-                      {selectedCase.isObitoMetanol && (
-                        <span
-                          className="flex items-center gap-1 text-sm text-red-700 font-semibold"
-                          title="Óbito relacionado à intoxicação por metanol"
-                        >
-                          ☠️ Óbito por metanol
-                        </span>
-                      )}
-                      {!selectedCase.isObitoMetanol &&
-                        selectedCase.isObitoOutrasCausas && (
-                          <span
-                            className="flex items-center gap-1 text-sm text-gray-700 font-semibold"
-                            title="Óbito por outras causas"
-                          >
-                            ✝️ Óbito por outras causas
-                          </span>
-                        )}
                     </div>
 
                     <div className="bg-gray-50 rounded-lg p-4 border border-gray-100">
