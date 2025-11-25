@@ -51,8 +51,8 @@
       }, []);
 
       // ======================
-      // DADOS DOS CASOS (13 NOTIFICADOS)
-      // 4 confirmados | 3 em investigação | 6 descartados
+      // DADOS DOS CASOS (14 NOTIFICADOS)
+      // 4 confirmados | 4 em investigação | 6 descartados
       // ======================
 
       // 4 CONFIRMADOS (todos gravidade Grave)
@@ -136,7 +136,7 @@
         },
       ];
 
-      // 3 EM INVESTIGAÇÃO (todos gravidade Grave)
+      // 4 EM INVESTIGAÇÃO (todos gravidade Grave)
       const casosEmInvestigacao = [
         {
           id: 13,
@@ -159,6 +159,25 @@
         },
         {
           id: 14,
+          status: "EM INVESTIGAÇÃO",
+          municipioResidencia: "Cuiabá",
+          municipioInternacao: "Cuiabá",
+          cidade: "Cuiabá",
+          perfil: "Feminino, 26 anos",
+          descricao: "Aguardando resultado laboratorial.",
+          statusColor: "bg-yellow-500",
+          borderColor: "border-yellow-400",
+          data: "24/11/2025",
+          gravidade: "Grave",
+          evolucao: "Em investigação",
+          necessitouHospitalizacao: "Sim",
+          permaneceHospitalizado: "Sim",
+          recebeuAntidoto: "Sim",
+          isObitoMetanol: false,
+          isObitoOutrasCausas: false,
+        },
+        {
+          id: 15,
           status: "EM INVESTIGAÇÃO",
           municipioResidencia: "Querência",
           municipioInternacao: "Barra do Garças",
@@ -335,9 +354,9 @@
       // ======================
       // KPIs CALCULADOS
       // ======================
-      const totalNotificado = todosCasos.length; // 13
+      const totalNotificado = todosCasos.length; // 14
       const totalConfirmado = casosConfirmados.length; // 4
-      const totalEmInvestigacao = casosEmInvestigacao.length; // 3
+      const totalEmInvestigacao = casosEmInvestigacao.length; // 4
       const totalDescartado = casosDescartados.length; // 6
 
       // Óbitos por metanol (via flag)
@@ -683,7 +702,7 @@
               <button
                 onClick={() => setActiveTab("confirmados")}
                 className={
-                  "flex-1 min-w-[120px] px-4 py-3 rounded-lg font-semibold text-sm md:text-base transition-all duration-300 " +
+                  "flex-1 min-w-[120px] px-4 py-3 rounded-lg font-semibold text-sm md:text-base transition-all duração-300 " +
                   (activeTab === "confirmados"
                     ? "bg-red-600 text-white shadow-lg transform scale-105"
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200")
@@ -694,7 +713,7 @@
               <button
                 onClick={() => setActiveTab("investigacao")}
                 className={
-                  "flex-1 min-w-[120px] px-4 py-3 rounded-lg font-semibold text-sm md:text-base transition-all duration-300 " +
+                  "flex-1 min-w-[120px] px-4 py-3 rounded-lg font-semibold text-sm md:text-base transition-all duração-300 " +
                   (activeTab === "investigacao"
                     ? "bg-yellow-500 text-white shadow-lg transform scale-105"
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200")
@@ -705,7 +724,7 @@
               <button
                 onClick={() => setActiveTab("descartados")}
                 className={
-                  "flex-1 min-w-[120px] px-4 py-3 rounded-lg font-semibold text-sm md:text-base transition-all duration-300 " +
+                  "flex-1 min-w-[120px] px-4 py-3 rounded-lg font-semibold text-sm md:text-base transition-all duração-300 " +
                   (activeTab === "descartados"
                     ? "bg-green-600 text-white shadow-lg transform scale-105"
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200")
@@ -716,7 +735,7 @@
               <button
                 onClick={() => setActiveTab("mapa")}
                 className={
-                  "flex-1 min-w-[120px] px-4 py-3 rounded-lg font-semibold text-sm md:text-base transition-all duration-300 " +
+                  "flex-1 min-w-[120px] px-4 py-3 rounded-lg font-semibold text-sm md:text-base transition-all duração-300 " +
                   (activeTab === "mapa"
                     ? "bg-purple-600 text-white shadow-lg transform scale-105"
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200")
