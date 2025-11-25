@@ -8,6 +8,13 @@
   <!-- Tailwind CSS via CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
 
+  <!-- Leaflet CSS e JS (mapa real) -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
   <!-- React 18, ReactDOM 18 e Babel via CDN -->
   <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
@@ -18,7 +25,7 @@
 
   <!-- Código React + JSX -->
   <script type="text/babel" data-presets="env,react">
-    const { useEffect, useMemo, useState } = React;
+    const { useEffect, useMemo, useState, useRef } = React;
 
     const App = () => {
       const TIMEZONE = "America/Sao_Paulo";
@@ -45,17 +52,16 @@
       const [activeTab, setActiveTab] = useState("geral"); // 'geral' | 'confirmados' | 'investigacao' | 'descartados' | 'mapa'
       const [selectedCase, setSelectedCase] = useState(null);
       const [animateCards, setAnimateCards] = useState(false);
+      const mapRef = useRef(null); // Instância do mapa Leaflet
 
       useEffect(() => {
         setAnimateCards(true);
       }, []);
 
       // ======================
-      // DADOS DOS CASOS (14 NOTIFICADOS)
-      // 4 confirmados | 4 em investigação | 6 descartados
+      // DADOS DOS CASOS
       // ======================
-
-      // 4 CONFIRMADOS (todos gravidade Grave)
+      // 4 confirmados (gravidade Grave)
       const casosConfirmados = [
         {
           id: 1,
@@ -136,7 +142,7 @@
         },
       ];
 
-      // 4 EM INVESTIGAÇÃO
+      // 4 em investigação (gravidade Grave)
       const casosEmInvestigacao = [
         {
           id: 13,
@@ -159,25 +165,6 @@
         },
         {
           id: 14,
-          status: "EM INVESTIGAÇÃO",
-          municipioResidencia: "Cuiabá",
-          municipioInternacao: "Cuiabá",
-          cidade: "Cuiabá",
-          perfil: "Feminino, 26 anos",
-          descricao: "Aguardando resultado laboratorial.",
-          statusColor: "bg-yellow-500",
-          borderColor: "border-yellow-400",
-          data: "24/11/2025",
-          gravidade: "Leve",           // AJUSTADO: quadro leve
-          evolucao: "Em investigação",
-          necessitouHospitalizacao: "Sim",
-          permaneceHospitalizado: "Sim",
-          recebeuAntidoto: "Não",       // já corrigido anteriormente
-          isObitoMetanol: false,
-          isObitoOutrasCausas: false,
-        },
-        {
-          id: 15,
           status: "EM INVESTIGAÇÃO",
           municipioResidencia: "Querência",
           municipioInternacao: "Barra do Garças",
@@ -214,9 +201,28 @@
           isObitoMetanol: false,
           isObitoOutrasCausas: false,
         },
+        {
+          id: 15,
+          status: "EM INVESTIGAÇÃO",
+          municipioResidencia: "Cuiabá",
+          municipioInternacao: "Cuiabá",
+          cidade: "Cuiabá",
+          perfil: "Feminino, 26 anos",
+          descricao: "Aguardando resultado laboratorial.",
+          statusColor: "bg-yellow-500",
+          borderColor: "border-yellow-400",
+          data: "24/11/2025",
+          gravidade: "Grave",
+          evolucao: "Em investigação",
+          necessitouHospitalizacao: "Sim",
+          permaneceHospitalizado: "Sim",
+          recebeuAntidoto: "Sim",
+          isObitoMetanol: false,
+          isObitoOutrasCausas: false,
+        },
       ];
 
-      // 6 DESCARTADOS (gravidade Não se aplica)
+      // 6 descartados (gravidade Não se aplica)
       const casosDescartados = [
         {
           id: 12,
@@ -245,7 +251,7 @@
           municipioResidencia: "Várzea Grande",
           municipioInternacao: "Várzea Grande",
           cidade: "Várzea Grande",
-          perfil: "Masculino, 40 anos",
+          perfil: "Masculino, 30 anos",
           descricao:
             "Exame toxicológico laboratorial negativo para metanol em amostra biológica. Caso descartado conforme critérios clínico-laboratoriais.",
           statusColor: "bg-green-700",
@@ -256,7 +262,7 @@
           evolucao: "Caso descartado",
           necessitouHospitalizacao: "Sim",
           permaneceHospitalizado: "Não",
-          recebeuAntidoto: "Sim",
+          recebeuAntidoto: "Não", // corrigido para Não
           isObitoMetanol: false,
           isObitoOutrasCausas: false,
         },
@@ -354,25 +360,22 @@
       // ======================
       // KPIs CALCULADOS
       // ======================
-      const totalNotificado = todosCasos.length; // 14
-      const totalConfirmado = casosConfirmados.length; // 4
-      const totalEmInvestigacao = casosEmInvestigacao.length; // 4
-      const totalDescartado = casosDescartados.length; // 6
+      const totalNotificado = todosCasos.length; // 4 + 4 + 6 = 14
+      const totalConfirmado = casosConfirmados.length;
+      const totalEmInvestigacao = casosEmInvestigacao.length;
+      const totalDescartado = casosDescartados.length;
 
-      // Óbitos por metanol (via flag)
       const totalObitosMetanol = todosCasos.filter(
         (caso) => caso.isObitoMetanol
       ).length;
 
-      // Casos atualmente internados
       const totalInternadosAtualmente = todosCasos.filter(
         (caso) => String(caso.permaneceHospitalizado).toLowerCase() === "sim"
       ).length;
 
-      // Casos que receberam antídoto
       const totalReceberamAntidoto = todosCasos.filter(
         (caso) => String(caso.recebeuAntidoto).toLowerCase() === "sim"
-      ).length;
+      ).length; // deve ser 6
 
       const kpiData = [
         {
@@ -434,7 +437,7 @@
       ];
 
       // ======================
-      // DISTRIBUIÇÃO POR MUNICÍPIO (MAPA)
+      // DISTRIBUIÇÃO POR MUNICÍPIO (RESIDÊNCIA)
       // ======================
       const cidadesAfetadas = Object.values(
         todosCasos.reduce((acc, caso) => {
@@ -464,6 +467,23 @@
       ).sort((a, b) => b.casos - a.casos);
 
       // ======================
+      // COORDENADAS PARA MAPA (MUNICÍPIOS)
+      // ======================
+      const coordsMunicipios = {
+        "Cuiabá": { lat: -15.601, lng: -56.097 },
+        "Várzea Grande": { lat: -15.646, lng: -56.132 },
+        "Nova Mutum": { lat: -13.837, lng: -56.074 },
+        "Sorriso": { lat: -12.542, lng: -55.721 },
+        "Itanhangá": { lat: -12.255, lng: -56.646 },
+        "Peixoto de Azevedo": { lat: -10.225, lng: -54.979 },
+        "Nova Brasilândia": { lat: -14.961, lng: -54.301 },
+        "Querência": { lat: -12.593, lng: -52.197 },
+        "Água Boa": { lat: -14.049, lng: -52.160 },
+        "Barra do Garças": { lat: -15.889, lng: -52.256 },
+        "Goiânia": { lat: -16.686, lng: -49.264 },
+      };
+
+      // ======================
       // HELPERS
       // ======================
 
@@ -490,7 +510,6 @@
         if (gravidade === "Não se aplica") {
           return "bg-gray-50 text-gray-700 border-gray-100";
         }
-        // Leve, Moderada, etc.
         return "bg-gray-50 text-gray-700 border-gray-100";
       };
 
@@ -513,32 +532,18 @@
                 onClick={() => setSelectedCase(caso)}
               >
                 <div className="flex items-start gap-3">
-                  <div className="flex flex-col items-center gap-1">
-                    <span
-                      className={
-                        caso.statusColor +
-                        " text-white text-xs font-bold px-3 py-1 rounded-full whitespace-nowrap"
-                      }
-                    >
-                      {caso.status}
-                    </span>
-                    {caso.isObitoMetanol && (
-                      <span
-                        className="text-xs text-red-700 flex items-center gap-1"
-                        title="Óbito relacionado à intoxicação por metanol"
-                      >
-                        ☠️ <span>Óbito por metanol</span>
-                      </span>
-                    )}
-                    {!caso.isObitoMetanol && caso.isObitoOutrasCausas && (
-                      <span
-                        className="text-xs text-gray-700 flex items-center gap-1"
-                        title="Óbito por outras causas"
-                      >
-                        ✝️ <span>Óbito por outras causas</span>
-                      </span>
-                    )}
-                  </div>
+                  <span
+                    className={
+                      caso.statusColor +
+                      " text-white text-xs font-bold px-3 py-1 rounded-full whitespace-nowrap flex items-center gap-1"
+                    }
+                  >
+                    {caso.status === "CONFIRMADO" && "⚠️"}
+                    {caso.status === "EM INVESTIGAÇÃO" && "🔍"}
+                    {caso.status === "DESCARTADO" && "✅"}
+                    <span>{caso.status}</span>
+                  </span>
+
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
                       <span className="text-gray-500 text-lg">📍</span>
@@ -551,12 +556,28 @@
                         Internação: {caso.municipioInternacao}
                       </p>
                     )}
+
                     <p className="text-sm text-gray-500 mb-1">({caso.perfil})</p>
                     <p className="text-xs text-gray-400 mb-1">{caso.data}</p>
+
                     <p className="text-sm text-gray-600 border-l-2 border-gray-300 pl-3">
                       {getDescricaoPadrao(caso)}
                     </p>
-                    <p className="text-xs text-gray-500 mt-1">
+
+                    <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1">
+                      {caso.isObitoMetanol && (
+                        <span className="inline-flex items-center gap-1 text-xs font-semibold text-red-700 bg-red-50 border border-red-200 rounded-full px-2 py-0.5">
+                          ☠️ Óbito confirmado por metanol
+                        </span>
+                      )}
+                      {caso.isObitoOutrasCausas && (
+                        <span className="inline-flex items-center gap-1 text-xs font-semibold text-gray-700 bg-gray-50 border border-gray-200 rounded-full px-2 py-0.5">
+                          ⚫ Óbito por outras causas
+                        </span>
+                      )}
+                    </div>
+
+                    <p className="text-xs text-gray-500 mt-2">
                       <span className="font-semibold">Evolução:</span> {caso.evolucao}
                     </p>
                     {caso.gravidade && (
@@ -583,6 +604,68 @@
           </div>
         </div>
       );
+
+      // ======================
+      // INICIALIZAÇÃO DO MAPA LEAFLET
+      // ======================
+      useEffect(() => {
+        if (activeTab !== "mapa") return;
+        if (typeof L === "undefined") return;
+
+        const initMap = () => {
+          const container = document.getElementById("map");
+          if (!container) return;
+
+          // Se o mapa já existe, apenas ajusta o tamanho
+          if (mapRef.current) {
+            mapRef.current.invalidateSize();
+            return;
+          }
+
+          const map = L.map("map").setView([-13.5, -56.0], 5.7);
+          mapRef.current = map;
+
+          L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            maxZoom: 18,
+            attribution: "© OpenStreetMap contributors",
+          }).addTo(map);
+
+          // Adiciona marcadores por município de residência
+          cidadesAfetadas.forEach((cidade, index) => {
+            const coord = coordsMunicipios[cidade.cidade];
+            if (!coord) return;
+
+            const isTop = index === 0;
+            const color = isTop ? "#dc2626" : "#7c3aed";
+
+            const total = cidade.casos;
+            const radius = 6 + total * 2;
+
+            const detalhesInternacao = Object.entries(cidade.internacoes)
+              .map(
+                ([loc, qtd]) =>
+                  `${loc}: ${qtd} ${qtd === 1 ? "caso" : "casos"}`
+              )
+              .join(" | ");
+
+            L.circleMarker([coord.lat, coord.lng], {
+              radius,
+              color,
+              weight: 2,
+              fillColor: color,
+              fillOpacity: 0.7,
+            })
+              .addTo(map)
+              .bindPopup(
+                `<strong>${cidade.cidade}</strong><br/>` +
+                  `${total} ${total === 1 ? "caso notificado" : "casos notificados"}<br/>` +
+                  `<small><em>Internações: ${detalhesInternacao}</em></small>`
+              );
+          });
+        };
+
+        setTimeout(initMap, 0);
+      }, [activeTab]);
 
       // ======================
       // RENDER PRINCIPAL
@@ -614,6 +697,18 @@
                   src="https://raw.githubusercontent.com/luishgm/imagens-para-projetos/main/logos/logo-governo-mato-grosso.png"
                   alt="Governo MT"
                   className="h-12 md:h-16 object-contain"
+                  onError={(e) => {
+                    e.currentTarget.style.display = "none";
+                  }}
+                />
+              </div>
+
+              {/* Imagem fixa de cabeçalho */}
+              <div className="mt-4">
+                <img
+                  src="Cabecalho.jpeg"
+                  alt="Cabeçalho COE Metanol SES-MT"
+                  className="w-full max-h-64 object-cover rounded-lg shadow-md"
                   onError={(e) => {
                     e.currentTarget.style.display = "none";
                   }}
@@ -703,7 +798,7 @@
               <button
                 onClick={() => setActiveTab("confirmados")}
                 className={
-                  "flex-1 min-w-[120px] px-4 py-3 rounded-lg font-semibold text-sm md:text-base transition-all duração-300 " +
+                  "flex-1 min-w-[120px] px-4 py-3 rounded-lg font-semibold text-sm md:text-base transition-all duration-300 " +
                   (activeTab === "confirmados"
                     ? "bg-red-600 text-white shadow-lg transform scale-105"
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200")
@@ -714,7 +809,7 @@
               <button
                 onClick={() => setActiveTab("investigacao")}
                 className={
-                  "flex-1 min-w-[120px] px-4 py-3 rounded-lg font-semibold text-sm md:text-base transition-all duração-300 " +
+                  "flex-1 min-w-[120px] px-4 py-3 rounded-lg font-semibold text-sm md:text-base transition-all duration-300 " +
                   (activeTab === "investigacao"
                     ? "bg-yellow-500 text-white shadow-lg transform scale-105"
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200")
@@ -725,7 +820,7 @@
               <button
                 onClick={() => setActiveTab("descartados")}
                 className={
-                  "flex-1 min-w-[120px] px-4 py-3 rounded-lg font-semibold text-sm md:text-base transition-all duração-300 " +
+                  "flex-1 min-w-[120px] px-4 py-3 rounded-lg font-semibold text-sm md:text-base transition-all duration-300 " +
                   (activeTab === "descartados"
                     ? "bg-green-600 text-white shadow-lg transform scale-105"
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200")
@@ -736,7 +831,7 @@
               <button
                 onClick={() => setActiveTab("mapa")}
                 className={
-                  "flex-1 min-w-[120px] px-4 py-3 rounded-lg font-semibold text-sm md:text-base transition-all duração-300 " +
+                  "flex-1 min-w-[120px] px-4 py-3 rounded-lg font-semibold text-sm md:text-base transition-all duration-300 " +
                   (activeTab === "mapa"
                     ? "bg-purple-600 text-white shadow-lg transform scale-105"
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200")
@@ -801,98 +896,26 @@
               <div className="bg-white p-6 rounded-xl shadow-lg">
                 <h3 className="text-2xl font-bold text-purple-700 mb-3 flex items-center gap-2">
                   <span>📍</span>
-                  Distribuição de Casos por Município (Residência)
+                  Distribuição Espacial dos Casos (Residência – MT)
                 </h3>
-                <p className="text-sm text-gray-600 mb-6">
-                  Proporção dos{" "}
+                <p className="text-sm text-gray-600 mb-4">
+                  Mapa interativo com a distribuição dos{" "}
                   <span className="font-semibold">{totalNotificado} casos notificados</span>{" "}
-                  distribuídos entre os municípios de residência dos pacientes. O segmento em vermelho
-                  indica o município com maior número de casos. A tooltip e a legenda apresentam
-                  também a distribuição dos locais de internação.
+                  segundo o município de residência dos pacientes. O tamanho dos círculos é
+                  proporcional ao número de casos em cada município. Clique nos marcadores para
+                  visualizar detalhes de residência e locais de internação.
                 </p>
 
-                {/* Barra única empilhada */}
-                <div className="w-full mb-8">
-                  <div className="h-8 md:h-10 bg-gray-200 rounded-full overflow-hidden flex shadow-inner">
-                    {cidadesAfetadas.map((cidade, index) => {
-                      const largura = (cidade.casos / totalNotificado) * 100;
-                      const isTop = index === 0;
-                      const baseClass = isTop ? "bg-red-600" : "bg-purple-500";
-                      const finalColor = !isTop && index % 2 !== 0 ? "bg-purple-400" : baseClass;
+                <div
+                  id="map"
+                  className="w-full h-96 md:h-[480px] rounded-xl border border-gray-200 overflow-hidden"
+                ></div>
 
-                      const detalhesInternacao = Object.entries(cidade.internacoes)
-                        .map(
-                          ([loc, qtd]) =>
-                            `${loc}: ${qtd} ${qtd === 1 ? "caso" : "casos"}`
-                        )
-                        .join(" | ");
-
-                      return (
-                        <div
-                          key={cidade.cidade}
-                          className={
-                            finalColor +
-                            " h-full flex items-center justify-center text-[10px] md:text-xs text-white font-semibold border-r border-white/20 last:border-0"
-                          }
-                          style={{ width: largura + "%" }}
-                          title={
-                            cidade.cidade +
-                            " - " +
-                            cidade.casos +
-                            " " +
-                            (cidade.casos === 1 ? "caso" : "casos") +
-                            " | Internação: " +
-                            detalhesInternacao
-                          }
-                        >
-                          {largura > 15 && <span>{cidade.cidade}</span>}
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Legenda */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {cidadesAfetadas.map((cidade, index) => {
-                    const percentual = ((cidade.casos / totalNotificado) * 100).toFixed(1);
-                    const isTop = index === 0;
-
-                    const detalhesInternacao = Object.entries(cidade.internacoes)
-                      .map(
-                        ([loc, qtd]) =>
-                          `${loc}: ${qtd} ${qtd === 1 ? "caso" : "casos"}`
-                      )
-                      .join(" | ");
-
-                    return (
-                      <div
-                        key={"legenda-" + cidade.cidade}
-                        className="flex items-center justify-between border border-gray-200 rounded-lg px-4 py-3 hover:bg-gray-50 transition-colors"
-                      >
-                        <div className="flex items-center gap-3">
-                          <span
-                            className={
-                              "w-4 h-4 rounded-full shadow-sm " +
-                              (isTop ? "bg-red-600" : "bg-purple-500")
-                            }
-                          ></span>
-                          <span className="font-semibold text-gray-800 text-sm">
-                            {cidade.cidade}
-                          </span>
-                        </div>
-                        <div className="text-right text-gray-600">
-                          <div className="text-sm font-bold">
-                            {cidade.casos} {cidade.casos === 1 ? "caso" : "casos"}
-                          </div>
-                          <div className="text-xs text-gray-400">
-                            {percentual}% – Internação: {detalhesInternacao}
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
+                <p className="mt-4 text-xs text-gray-500">
+                  Fonte: CIEVS-MT / SES-MT. Base cartográfica: OpenStreetMap (meramente ilustrativa).
+                  Os pontos representam municípios do estado de Mato Grosso e locais de internação
+                  relacionados aos casos notificados de suspeita de intoxicação por metanol.
+                </p>
               </div>
             )}
 
@@ -907,7 +930,19 @@
                   onClick={(e) => e.stopPropagation()}
                 >
                   <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-2xl font-bold text-gray-800">Detalhes do Caso</h3>
+                    <h3 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                      Detalhes do Caso
+                      {selectedCase.isObitoMetanol && (
+                        <span className="inline-flex items-center gap-1 text-xs font-semibold text-red-700 bg-red-50 border border-red-200 rounded-full px-2 py-0.5">
+                          ☠️ Óbito confirmado por metanol
+                        </span>
+                      )}
+                      {selectedCase.isObitoOutrasCausas && (
+                        <span className="inline-flex items-center gap-1 text-xs font-semibold text-gray-700 bg-gray-50 border border-gray-200 rounded-full px-2 py-0.5">
+                          ⚫ Óbito por outras causas
+                        </span>
+                      )}
+                    </h3>
                     <button
                       onClick={() => setSelectedCase(null)}
                       className="text-gray-400 hover:text-gray-600 transition-colors text-3xl leading-none"
@@ -920,10 +955,13 @@
                       <span
                         className={
                           selectedCase.statusColor +
-                          " text-white text-sm font-bold px-4 py-2 rounded-full shadow-sm"
+                          " text-white text-sm font-bold px-4 py-2 rounded-full shadow-sm flex items-center gap-1"
                         }
                       >
-                        {selectedCase.status}
+                        {selectedCase.status === "CONFIRMADO" && "⚠️"}
+                        {selectedCase.status === "EM INVESTIGAÇÃO" && "🔍"}
+                        {selectedCase.status === "DESCARTADO" && "✅"}
+                        <span>{selectedCase.status}</span>
                       </span>
                       {selectedCase.gravidade && (
                         <span
@@ -935,23 +973,6 @@
                           Gravidade: {selectedCase.gravidade}
                         </span>
                       )}
-                      {selectedCase.isObitoMetanol && (
-                        <span
-                          className="flex items-center gap-1 text-sm text-red-700 font-semibold"
-                          title="Óbito relacionado à intoxicação por metanol"
-                        >
-                          ☠️ Óbito por metanol
-                        </span>
-                      )}
-                      {!selectedCase.isObitoMetanol &&
-                        selectedCase.isObitoOutrasCausas && (
-                          <span
-                            className="flex items-center gap-1 text-sm text-gray-700 font-semibold"
-                            title="Óbito por outras causas"
-                          >
-                            ✝️ Óbito por outras causas
-                          </span>
-                        )}
                     </div>
 
                     <div className="bg-gray-50 rounded-lg p-4 border border-gray-100">
