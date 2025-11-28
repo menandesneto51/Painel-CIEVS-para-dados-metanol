@@ -30,7 +30,7 @@
     const App = () => {
       const TIMEZONE = "America/Sao_Paulo";
 
-      // Data dinâmica sempre às 10h do dia atual (fixada às 10h)
+      // Data dinâmica sempre às 10h do dia atual
       const lastUpdate = useMemo(() => {
         const now = new Date();
         const day = new Intl.DateTimeFormat("pt-BR", {
@@ -49,7 +49,7 @@
         return `${day} de ${month} de ${year} às 10h`;
       }, []);
 
-      const [activeTab, setActiveTab] = useState("geral"); // 'geral' | 'confirmados' | 'investigacao' | 'descartados' | 'mapa'
+      const [activeTab, setActiveTab] = useState("geral");
       const [selectedCase, setSelectedCase] = useState(null);
       const [animateCards, setAnimateCards] = useState(false);
       const mapRef = useRef(null); // Instância do mapa Leaflet
@@ -59,9 +59,11 @@
       }, []);
 
       // ======================
-      // DADOS DOS CASOS
+      // DADOS DOS CASOS (14 NOTIFICADOS)
+      // 6 confirmados | 2 em investigação | 6 descartados
       // ======================
-      // 4 confirmados (gravidade Grave)
+
+      // 6 CONFIRMADOS (Grave)
       const casosConfirmados = [
         {
           id: 1,
@@ -140,23 +142,19 @@
           isObitoMetanol: true,
           isObitoOutrasCausas: false,
         },
-      ];
-
-      // 4 em investigação (gravidade Grave)
-      const casosEmInvestigacao = [
         {
           id: 13,
-          status: "EM INVESTIGAÇÃO",
+          status: "CONFIRMADO",
           municipioResidencia: "Nova Brasilândia",
           municipioInternacao: "Cuiabá",
           cidade: "Nova Brasilândia → Internado em Cuiabá",
           perfil: "Masculino, 33 anos",
-          descricao: "Aguardando resultado laboratorial.",
-          statusColor: "bg-yellow-500",
-          borderColor: "border-yellow-400",
+          descricao: "Exame toxicológico positivo para metanol. Caso confirmado.",
+          statusColor: "bg-red-600",
+          borderColor: "border-red-400",
           data: "17/11/2025",
           gravidade: "Grave",
-          evolucao: "Em investigação, internado em Cuiabá",
+          evolucao: "Permanece internado em Cuiabá",
           necessitouHospitalizacao: "Sim",
           permaneceHospitalizado: "Sim",
           recebeuAntidoto: "Sim",
@@ -165,23 +163,27 @@
         },
         {
           id: 14,
-          status: "EM INVESTIGAÇÃO",
+          status: "CONFIRMADO",
           municipioResidencia: "Querência",
           municipioInternacao: "Barra do Garças",
           cidade: "Querência → Internado em Barra do Garças",
           perfil: "Masculino, 24 anos",
-          descricao: "Aguardando resultado laboratorial.",
-          statusColor: "bg-yellow-500",
-          borderColor: "border-yellow-400",
+          descricao: "Exame toxicológico positivo para metanol. Caso confirmado.",
+          statusColor: "bg-red-600",
+          borderColor: "border-red-400",
           data: "18/11/2025",
           gravidade: "Grave",
-          evolucao: "Em investigação, internado em Barra do Garças",
+          evolucao: "Óbito por intoxicação exógena confirmada por metanol",
           necessitouHospitalizacao: "Sim",
-          permaneceHospitalizado: "Sim",
+          permaneceHospitalizado: "Não",
           recebeuAntidoto: "Não",
-          isObitoMetanol: false,
+          isObitoMetanol: true,
           isObitoOutrasCausas: false,
         },
+      ];
+
+      // 2 EM INVESTIGAÇÃO (Grave)
+      const casosEmInvestigacao = [
         {
           id: 2,
           status: "EM INVESTIGAÇÃO",
@@ -222,7 +224,7 @@
         },
       ];
 
-      // 6 descartados (gravidade Não se aplica)
+      // 6 DESCARTADOS (Não se aplica)
       const casosDescartados = [
         {
           id: 12,
@@ -262,7 +264,7 @@
           evolucao: "Caso descartado",
           necessitouHospitalizacao: "Sim",
           permaneceHospitalizado: "Não",
-          recebeuAntidoto: "Não", // corrigido para Não
+          recebeuAntidoto: "Não",
           isObitoMetanol: false,
           isObitoOutrasCausas: false,
         },
@@ -358,16 +360,16 @@
       ];
 
       // ======================
-      // KPIs CALCULADOS
+      // KPIs
       // ======================
-      const totalNotificado = todosCasos.length; // 4 + 4 + 6 = 14
-      const totalConfirmado = casosConfirmados.length;
-      const totalEmInvestigacao = casosEmInvestigacao.length;
-      const totalDescartado = casosDescartados.length;
+      const totalNotificado = todosCasos.length; // 14
+      const totalConfirmado = casosConfirmados.length; // 6
+      const totalEmInvestigacao = casosEmInvestigacao.length; // 2
+      const totalDescartado = casosDescartados.length; // 6
 
       const totalObitosMetanol = todosCasos.filter(
         (caso) => caso.isObitoMetanol
-      ).length;
+      ).length; // 3
 
       const totalInternadosAtualmente = todosCasos.filter(
         (caso) => String(caso.permaneceHospitalizado).toLowerCase() === "sim"
@@ -375,7 +377,7 @@
 
       const totalReceberamAntidoto = todosCasos.filter(
         (caso) => String(caso.recebeuAntidoto).toLowerCase() === "sim"
-      ).length; // deve ser 6
+      ).length; // 6
 
       const kpiData = [
         {
@@ -437,7 +439,7 @@
       ];
 
       // ======================
-      // DISTRIBUIÇÃO POR MUNICÍPIO (RESIDÊNCIA)
+      // DISTRIBUIÇÃO POR MUNICÍPIO (Residência)
       // ======================
       const cidadesAfetadas = Object.values(
         todosCasos.reduce((acc, caso) => {
@@ -467,7 +469,7 @@
       ).sort((a, b) => b.casos - a.casos);
 
       // ======================
-      // COORDENADAS PARA MAPA (MUNICÍPIOS)
+      // COORDENADAS (Mapa)
       // ======================
       const coordsMunicipios = {
         "Cuiabá": { lat: -15.601, lng: -56.097 },
@@ -486,7 +488,6 @@
       // ======================
       // HELPERS
       // ======================
-
       const getDescricaoPadrao = (caso) => {
         if (caso.status === "CONFIRMADO") {
           return "Exame toxicológico laboratorial positivo para metanol em amostra biológica. Caso confirmado conforme critérios clínico-laboratoriais.";
@@ -670,7 +671,6 @@
       // ======================
       // RENDER PRINCIPAL
       // ======================
-
       return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 font-sans">
           {/* Header com Logos */}
