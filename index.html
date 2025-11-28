@@ -217,8 +217,8 @@
           gravidade: "Grave",
           evolucao: "Em investigação",
           necessitouHospitalizacao: "Sim",
-          permaneceHospitalizado: "Sim",
-          recebeuAntidoto: "Sim",
+          permaneceHospitalizado: "Não",  // ATUALIZADO: recebeu alta
+          recebeuAntidoto: "Não",          // ATUALIZADO: não recebeu antídoto
           isObitoMetanol: false,
           isObitoOutrasCausas: false,
         },
@@ -377,7 +377,7 @@
 
       const totalReceberamAntidoto = todosCasos.filter(
         (caso) => String(caso.recebeuAntidoto).toLowerCase() === "sim"
-      ).length; // 6
+      ).length; // valor agora reflete a correção
 
       const kpiData = [
         {
