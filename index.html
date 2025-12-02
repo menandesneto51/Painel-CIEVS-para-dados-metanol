@@ -177,27 +177,8 @@
         },
       ];
 
-      // 2 EM INVESTIGAÇÃO (Grave)
+      // EM INVESTIGAÇÃO (Agora apenas 1 caso restante)
       const casosEmInvestigacao = [
-        {
-          id: 2,
-          status: "EM INVESTIGAÇÃO",
-          municipioResidencia: "Água Boa",
-          municipioInternacao: "Goiânia",
-          cidade: "Água Boa → Internado em Goiânia",
-          perfil: "Masculino, 27 anos",
-          descricao: "Paciente permanece internado. Aguarda resultado laboratorial.",
-          statusColor: "bg-yellow-500",
-          borderColor: "border-yellow-400",
-          data: "21/10/2025",
-          gravidade: "Grave",
-          evolucao: "Em investigação, internado em Goiânia",
-          necessitouHospitalizacao: "Sim",
-          permaneceHospitalizado: "Sim",
-          recebeuAntidoto: "Sim",
-          isObitoMetanol: false,
-          isObitoOutrasCausas: false,
-        },
         {
           id: 15,
           status: "EM INVESTIGAÇÃO",
@@ -221,6 +202,27 @@
 
       // DESCARTADOS
       const casosDescartados = [
+        // CASO ÁGUA BOA (Movido para cá)
+        {
+          id: 2,
+          status: "DESCARTADO",
+          municipioResidencia: "Água Boa",
+          municipioInternacao: "Goiânia",
+          cidade: "Água Boa → Internado em Goiânia",
+          perfil: "Masculino, 27 anos",
+          descricao: "Conforme Laudo Pericial Criminal RAI nº 44250470, emitido pelo Instituto de Criminalística Leonardo Rodrigues, da Superintendência de Polícia Técnico-Científica da Secretaria de Estado da Segurança Pública de Goiás, não houve detecção de etanol, metanol ou ácido fórmico nas amostras de sangue e urina coletadas do referido paciente. Dessa forma, o CIATox (Centro de Informação e Assistência Toxicológica de Goiás)/GESP(Gerência de Emergência em Saúde Pública)/SUVEPI/SUVISA/SES-GO, pauta-se no laudo pericial, que apresentou resultado NEGATIVO para os analíticos investigados.",
+          statusColor: "bg-green-700", // Alterado para Verde
+          borderColor: "border-green-400",
+          data: "21/10/2025",
+          tipo: "Descartado",
+          gravidade: "Não se aplica",
+          evolucao: "Caso descartado após laudo negativo",
+          necessitouHospitalizacao: "Sim",
+          permaneceHospitalizado: "Sim",
+          recebeuAntidoto: "Sim",
+          isObitoMetanol: false,
+          isObitoOutrasCausas: false,
+        },
         {
           id: 12,
           status: "DESCARTADO",
@@ -346,7 +348,6 @@
           isObitoMetanol: false,
           isObitoOutrasCausas: true,
         },
-        // NOVO CASO INSERIDO (ID ajustado para 16 para evitar conflito com ID 15 existente)
         {
           id: 16,
           status: "DESCARTADO",
@@ -499,7 +500,7 @@
         "Água Boa": { lat: -14.049, lng: -52.160 },
         "Barra do Garças": { lat: -15.889, lng: -52.256 },
         "Goiânia": { lat: -16.686, lng: -49.264 },
-        "Mirassol D'oeste": { lat: -15.676, lng: -58.096 }, // Coordenadas adicionadas
+        "Mirassol D'oeste": { lat: -15.676, lng: -58.096 },
       };
 
       // ======================
