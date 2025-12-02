@@ -5,17 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Painel de Monitoramento – Intoxicação por Suspeita de Metanol (SES-MT)</title>
 
-  <!-- Tailwind CSS via CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Leaflet CSS e JS (mapa real) -->
   <link
     rel="stylesheet"
     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
   />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-  <!-- React 18, ReactDOM 18 e Babel via CDN -->
   <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -23,7 +20,6 @@
 <body class="bg-gray-100">
   <div id="root"></div>
 
-  <!-- Código React + JSX -->
   <script type="text/babel" data-presets="env,react">
     const { useEffect, useMemo, useState, useRef } = React;
 
@@ -59,8 +55,7 @@
       }, []);
 
       // ======================
-      // DADOS DOS CASOS (14 NOTIFICADOS)
-      // 6 confirmados | 2 em investigação | 6 descartados
+      // DADOS DOS CASOS
       // ======================
 
       // 6 CONFIRMADOS (Grave)
@@ -217,14 +212,14 @@
           gravidade: "Grave",
           evolucao: "Em investigação",
           necessitouHospitalizacao: "Sim",
-          permaneceHospitalizado: "Não",  // ATUALIZADO: recebeu alta
-          recebeuAntidoto: "Não",          // ATUALIZADO: não recebeu antídoto
+          permaneceHospitalizado: "Não",
+          recebeuAntidoto: "Não",
           isObitoMetanol: false,
           isObitoOutrasCausas: false,
         },
       ];
 
-      // 6 DESCARTADOS (Não se aplica)
+      // DESCARTADOS
       const casosDescartados = [
         {
           id: 12,
@@ -351,6 +346,27 @@
           isObitoMetanol: false,
           isObitoOutrasCausas: true,
         },
+        // NOVO CASO INSERIDO (ID ajustado para 16 para evitar conflito com ID 15 existente)
+        {
+          id: 16,
+          status: "DESCARTADO",
+          municipioResidencia: "Mirassol D'oeste",
+          municipioInternacao: "Mirassol D'oeste",
+          cidade: "Mirassol D'oeste",
+          perfil: "Masculino, 20 anos",
+          descricao: "Caso descartado pela equipe de vigilância.",
+          statusColor: "bg-green-700",
+          borderColor: "border-green-400",
+          data: "01/12/2025",
+          tipo: "Descartado",
+          gravidade: "Não se aplica",
+          evolucao: "Caso descartado",
+          necessitouHospitalizacao: "Sim",
+          permaneceHospitalizado: "Não",
+          recebeuAntidoto: "Não",
+          isObitoMetanol: false,
+          isObitoOutrasCausas: false,
+        }
       ];
 
       const todosCasos = [
@@ -362,14 +378,14 @@
       // ======================
       // KPIs
       // ======================
-      const totalNotificado = todosCasos.length; // 14
-      const totalConfirmado = casosConfirmados.length; // 6
-      const totalEmInvestigacao = casosEmInvestigacao.length; // 2
-      const totalDescartado = casosDescartados.length; // 6
+      const totalNotificado = todosCasos.length;
+      const totalConfirmado = casosConfirmados.length;
+      const totalEmInvestigacao = casosEmInvestigacao.length;
+      const totalDescartado = casosDescartados.length;
 
       const totalObitosMetanol = todosCasos.filter(
         (caso) => caso.isObitoMetanol
-      ).length; // 3
+      ).length;
 
       const totalInternadosAtualmente = todosCasos.filter(
         (caso) => String(caso.permaneceHospitalizado).toLowerCase() === "sim"
@@ -377,7 +393,7 @@
 
       const totalReceberamAntidoto = todosCasos.filter(
         (caso) => String(caso.recebeuAntidoto).toLowerCase() === "sim"
-      ).length; // valor agora reflete a correção
+      ).length;
 
       const kpiData = [
         {
@@ -483,6 +499,7 @@
         "Água Boa": { lat: -14.049, lng: -52.160 },
         "Barra do Garças": { lat: -15.889, lng: -52.256 },
         "Goiânia": { lat: -16.686, lng: -49.264 },
+        "Mirassol D'oeste": { lat: -15.676, lng: -58.096 }, // Coordenadas adicionadas
       };
 
       // ======================
