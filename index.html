@@ -24,25 +24,31 @@
     const { useEffect, useMemo, useState, useRef } = React;
 
     const App = () => {
-      const TIMEZONE = "America/Sao_Paulo";
-
-      // Data dinâmica sempre às 10h do dia atual
+      // Lógica de Data Atualizada:
+      // Se horário < 10h -> usa horário da máquina.
+      // Se horário >= 10h -> fixa em "às 10h".
       const lastUpdate = useMemo(() => {
         const now = new Date();
-        const day = new Intl.DateTimeFormat("pt-BR", {
-          timeZone: TIMEZONE,
-          day: "2-digit",
-        }).format(now);
-        const monthRaw = new Intl.DateTimeFormat("pt-BR", {
-          timeZone: TIMEZONE,
-          month: "long",
-        }).format(now);
+        const hour = now.getHours(); // Pega a hora local da máquina
+
+        // Formatação da Data (Dia de Mês de Ano)
+        const day = new Intl.DateTimeFormat("pt-BR", { day: "2-digit" }).format(now);
+        const monthRaw = new Intl.DateTimeFormat("pt-BR", { month: "long" }).format(now);
         const month = monthRaw.charAt(0).toUpperCase() + monthRaw.slice(1);
-        const year = new Intl.DateTimeFormat("pt-BR", {
-          timeZone: TIMEZONE,
-          year: "numeric",
-        }).format(now);
-        return `${day} de ${month} de ${year} às 10h`;
+        const year = new Intl.DateTimeFormat("pt-BR", { year: "numeric" }).format(now);
+        const datePart = `${day} de ${month} de ${year}`;
+
+        if (hour < 10) {
+          // Usa o horário da máquina (HH:mm)
+          const timePart = new Intl.DateTimeFormat("pt-BR", {
+            hour: "2-digit",
+            minute: "2-digit",
+          }).format(now);
+          return `${datePart} às ${timePart}`;
+        } else {
+          // Fixa às 10h
+          return `${datePart} às 10h`;
+        }
       }, []);
 
       const [activeTab, setActiveTab] = useState("geral");
@@ -202,7 +208,7 @@
 
       // DESCARTADOS
       const casosDescartados = [
-        // CASO ÁGUA BOA (Movido para cá)
+        // CASO ÁGUA BOA (Atualizado: Removido o número RAI)
         {
           id: 2,
           status: "DESCARTADO",
@@ -211,7 +217,7 @@
           cidade: "Água Boa → Internado em Goiânia",
           perfil: "Masculino, 27 anos",
           descricao: "Conforme Laudo Pericial Criminal, emitido pelo Instituto de Criminalística Leonardo Rodrigues, da Superintendência de Polícia Técnico-Científica da Secretaria de Estado da Segurança Pública de Goiás, não houve detecção de etanol, metanol ou ácido fórmico nas amostras de sangue e urina coletadas do referido paciente. Dessa forma, o CIATox (Centro de Informação e Assistência Toxicológica de Goiás)/GESP(Gerência de Emergência em Saúde Pública)/SUVEPI/SUVISA/SES-GO, pauta-se no laudo pericial, que apresentou resultado NEGATIVO para os analíticos investigados.",
-          statusColor: "bg-green-700", // Alterado para Verde
+          statusColor: "bg-green-700",
           borderColor: "border-green-400",
           data: "21/10/2025",
           tipo: "Descartado",
@@ -348,6 +354,7 @@
           isObitoMetanol: false,
           isObitoOutrasCausas: true,
         },
+        // NOVO CASO INSERIDO (Mirassol D'oeste)
         {
           id: 16,
           status: "DESCARTADO",
@@ -500,7 +507,7 @@
         "Água Boa": { lat: -14.049, lng: -52.160 },
         "Barra do Garças": { lat: -15.889, lng: -52.256 },
         "Goiânia": { lat: -16.686, lng: -49.264 },
-        "Mirassol D'oeste": { lat: -15.676, lng: -58.096 },
+        "Mirassol D'oeste": { lat: -15.676, lng: -58.096 }, // Coordenadas inseridas
       };
 
       // ======================
