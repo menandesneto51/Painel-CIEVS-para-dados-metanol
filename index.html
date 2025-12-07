@@ -64,7 +64,7 @@
       // DADOS DOS CASOS
       // ======================
 
-      // 6 CONFIRMADOS (Grave)
+      // CONFIRMADOS (Grave)
       const casosConfirmados = [
         {
           id: 1,
@@ -143,6 +143,7 @@
           isObitoMetanol: true,
           isObitoOutrasCausas: false,
         },
+        // ATUALIZADO: Nova Brasilândia (Óbito)
         {
           id: 13,
           status: "CONFIRMADO",
@@ -155,11 +156,11 @@
           borderColor: "border-red-400",
           data: "17/11/2025",
           gravidade: "Grave",
-          evolucao: "Permanece internado em Cuiabá",
+          evolucao: "Óbito em 07/12/2025",
           necessitouHospitalizacao: "Sim",
-          permaneceHospitalizado: "Sim",
+          permaneceHospitalizado: "Não",
           recebeuAntidoto: "Sim",
-          isObitoMetanol: false,
+          isObitoMetanol: true,
           isObitoOutrasCausas: false,
         },
         {
@@ -183,7 +184,7 @@
         },
       ];
 
-      // EM INVESTIGAÇÃO (Agora apenas 1 caso restante)
+      // EM INVESTIGAÇÃO
       const casosEmInvestigacao = [
         {
           id: 15,
@@ -204,11 +205,50 @@
           isObitoMetanol: false,
           isObitoOutrasCausas: false,
         },
+        // NOVO CASO: Juína
+        {
+          id: 17,
+          status: "EM INVESTIGAÇÃO",
+          municipioResidencia: "Juína",
+          municipioInternacao: "Juína",
+          cidade: "Juína",
+          perfil: "Feminino, 26 anos",
+          descricao: "Aguardando resultado laboratorial.",
+          statusColor: "bg-yellow-500",
+          borderColor: "border-yellow-400",
+          data: "07/12/2025",
+          gravidade: "Grave",
+          evolucao: "Em investigação",
+          necessitouHospitalizacao: "Sim",
+          permaneceHospitalizado: "Sim",
+          recebeuAntidoto: null,
+          isObitoMetanol: false,
+          isObitoOutrasCausas: false,
+        },
+        // NOVO CASO: Várzea Grande (Feminino 30a)
+        {
+          id: 18,
+          status: "EM INVESTIGAÇÃO",
+          municipioResidencia: "Várzea Grande",
+          municipioInternacao: "Várzea Grande",
+          cidade: "Várzea Grande",
+          perfil: "Feminino, 30 anos",
+          descricao: "Aguardando resultado laboratorial.",
+          statusColor: "bg-yellow-500",
+          borderColor: "border-yellow-400",
+          data: "07/12/2025",
+          gravidade: "Grave",
+          evolucao: "Em investigação",
+          necessitouHospitalizacao: "Sim",
+          permaneceHospitalizado: "Sim",
+          recebeuAntidoto: null,
+          isObitoMetanol: false,
+          isObitoOutrasCausas: false,
+        }
       ];
 
       // DESCARTADOS
       const casosDescartados = [
-        // CASO ÁGUA BOA (Atualizado: Removido o número RAI)
         {
           id: 2,
           status: "DESCARTADO",
@@ -354,7 +394,6 @@
           isObitoMetanol: false,
           isObitoOutrasCausas: true,
         },
-        // NOVO CASO INSERIDO (Mirassol D'oeste)
         {
           id: 16,
           status: "DESCARTADO",
@@ -507,7 +546,8 @@
         "Água Boa": { lat: -14.049, lng: -52.160 },
         "Barra do Garças": { lat: -15.889, lng: -52.256 },
         "Goiânia": { lat: -16.686, lng: -49.264 },
-        "Mirassol D'oeste": { lat: -15.676, lng: -58.096 }, // Coordenadas inseridas
+        "Mirassol D'oeste": { lat: -15.676, lng: -58.096 },
+        "Juína": { lat: -11.378, lng: -58.743 }, // Coordenada Inserida
       };
 
       // ======================
