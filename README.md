@@ -23,6 +23,7 @@ A última notificação registrada na planilha ocorreu em **12/07/2026**, no mun
 - grafias municipais foram normalizadas, incluindo `Itanhangá` e `Novo Santo Antônio`;
 - as regiões de saúde foram padronizadas conforme a organização territorial da SES-MT;
 - campos ausentes foram mantidos como `Não informado`, sem inferir ausência do evento;
+- a planilha-fonte não possui campo explícito de sexo; essa informação foi publicada como `Não informado`, sem inferência a partir do nome;
 - o indicador de óbitos considera somente casos com `classificacao = Confirmado` e `evolucao = Óbito`;
 - óbito ocorrido em caso descartado é apresentado separadamente e não compõe a letalidade por metanol;
 - a versão estática (`index.html`) passou a carregar diretamente o mesmo CSV utilizado pelo Streamlit, evitando divergência entre as duas apresentações.
