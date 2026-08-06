@@ -1,147 +1,74 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Painel Metanol — CIEVS-MT</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <style>
-    :root { --ses:#1b3281; --ses-dark:#10245f; --cievs:#ed6b1a; }
-    body { background:#f7f8fb; color:#231f20; }
-    .brand-rule { border-bottom:4px solid var(--cievs); }
-    .kpi { background:#fff; border:1px solid #dfe2ed; border-top:4px solid var(--ses); }
-    #map { height:480px; }
-    .badge { display:inline-flex; padding:.15rem .5rem; border-radius:999px; font-size:.75rem; font-weight:700; }
-    .confirmado { background:#fee2e2; color:#991b1b; }
-    .investigacao { background:#fef3c7; color:#92400e; }
-    .descartado { background:#dcfce7; color:#166534; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Painel de Monitoramento – Intoxicação por Metanol (SES-MT)</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+:root{--blue:#2563eb;--red:#dc2626;--yellow:#eab308;--green:#15803d;--purple:#7c3aed;--slate:#334155;--orange:#ea580c;--indigo:#4f46e5;--bg:#f1f5f9;--border:#e2e8f0}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(135deg,#f8fafc,#eff6ff);color:#1e293b}
+.container{width:min(1320px,calc(100% - 32px));margin:auto}.header{background:#fff;border-bottom:1px solid var(--border);box-shadow:0 1px 4px #0f172a14}
+.logos{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;padding:18px 0}.logos img{height:58px;max-width:31%;object-fit:contain}
+.hero{text-align:center;padding:30px 0 22px}.hero h1{font-size:clamp(30px,5vw,52px);margin:0}.hero p{font-size:clamp(17px,2vw,22px);font-weight:700;color:#1d4ed8;margin:8px 0 0}
+.update{padding:14px 18px;border-radius:10px;margin-bottom:18px;box-shadow:0 2px 8px #0f172a12}.update{background:#fffbeb;border-left:5px solid #f59e0b;color:#92400e;text-align:center}
+
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:26px 0}.kpi{background:#fff;border-radius:13px;padding:16px;box-shadow:0 3px 12px #0f172a14;border-top:5px solid var(--c);min-height:130px}
+.kpi-head{display:flex;justify-content:space-between;gap:10px}.kpi-label{text-transform:uppercase;font-size:11px;font-weight:800;color:#64748b}.kpi-icon{font-size:24px}.kpi-value{font-size:41px;font-weight:800;color:var(--c);margin-top:20px}
+.tabs{background:#fff;padding:8px;border-radius:12px;display:flex;gap:8px;flex-wrap:wrap;box-shadow:0 3px 12px #0f172a14;margin-bottom:25px}.tab{border:0;background:#f1f5f9;color:#475569;padding:13px 17px;border-radius:9px;font-weight:700;cursor:pointer;flex:1;min-width:135px}.tab.active{background:var(--c);color:#fff}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}.section-title{font-size:18px;font-weight:800;color:var(--c);margin:0 0 10px}.list{background:#fff;border-radius:14px;padding:17px;border-left:8px solid var(--c);box-shadow:0 3px 12px #0f172a14}
+.card{border:1px solid var(--border);border-radius:12px;padding:15px;margin-bottom:13px;background:#fff;cursor:pointer;transition:.15s}.card:hover{box-shadow:0 5px 16px #0f172a1f;transform:translateY(-1px)}.card:last-child{margin-bottom:0}
+.row{display:flex;gap:11px;align-items:flex-start}.badge{display:inline-flex;gap:5px;align-items:center;background:var(--c);color:#fff;border-radius:999px;padding:6px 10px;font-size:11px;font-weight:800;white-space:nowrap}
+.content{flex:1;min-width:0}.primary{font-weight:750;margin:0 0 5px}.muted{font-size:13px;color:#64748b;margin:4px 0}.desc{font-size:14px;color:#475569;border-left:2px solid #cbd5e1;padding-left:10px;margin:11px 0}
+.info{display:grid;grid-template-columns:1fr 1fr;gap:5px 12px;font-size:12px;color:#64748b}.death{display:inline-block;border-radius:999px;padding:5px 9px;font-size:11px;font-weight:800;margin:4px 4px 5px 0}.death.met{background:#fef2f2;color:#b91c1c;border:1px solid #fecaca}.death.other{background:#f1f5f9;color:#334155;border:1px solid #cbd5e1}
+.map-card{background:#fff;border-radius:14px;padding:20px;box-shadow:0 3px 12px #0f172a14}.map-card h2{color:#6d28d9;margin:0 0 8px}#map{height:520px;border:1px solid var(--border);border-radius:12px;background:#e2e8f0}
+.cities{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:16px}.city{border:1px solid var(--border);background:#f8fafc;border-radius:9px;padding:12px}.city-head{display:flex;justify-content:space-between;font-weight:800}.city-sub{font-size:12px;color:#64748b;margin-top:5px}
+.modal{position:fixed;inset:0;background:#0f172a99;z-index:9999;display:flex;align-items:center;justify-content:center;padding:18px}.hidden{display:none}.modal-card{background:#fff;border-radius:16px;width:min(760px,100%);max-height:90vh;overflow:auto;padding:23px;box-shadow:0 24px 70px #0006}.modal-head{display:flex;justify-content:space-between;gap:15px}.close{border:0;background:transparent;font-size:32px;cursor:pointer;color:#64748b}
+.details{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}.detail{background:#f8fafc;border:1px solid var(--border);border-radius:9px;padding:11px}.detail b{display:block;font-size:11px;text-transform:uppercase;color:#64748b;margin-bottom:4px}.detail-desc{background:#eff6ff;border-left:4px solid #3b82f6;border-radius:9px;padding:14px;margin-top:15px}.notes{background:#f8fafc;border:1px solid #e2e8f0;border-radius:9px;padding:12px;color:#475569;margin-top:12px}
+.footer{text-align:center;font-size:12px;color:#64748b;padding:28px 0}
+@media(max-width:1100px){.grid3{grid-template-columns:1fr}.cities{grid-template-columns:repeat(2,1fr)}}@media(max-width:700px){.container{width:min(100% - 20px,1320px)}.kpis{grid-template-columns:repeat(2,1fr)}.logos{justify-content:center}.logos img{height:46px;max-width:46%}.row{flex-direction:column}.info,.details{grid-template-columns:1fr}.cities{grid-template-columns:1fr}#map{height:430px}}
+</style>
 </head>
 <body>
-  <header class="bg-[#10245f] text-white brand-rule">
-    <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-      <div>
-        <div class="text-xs tracking-widest font-bold uppercase">Governo de Mato Grosso · Secretaria de Estado de Saúde · CIEVS-MT</div>
-        <h1 class="text-2xl font-bold mt-1">Painel Metanol — Vigilância e Resposta</h1>
-      </div>
-      <div class="text-sm text-blue-100">Base atualizada em 05/08/2026</div>
-    </div>
-  </header>
+<header class="header"><div class="container logos">
+<img src="https://raw.githubusercontent.com/luishgm/imagens-para-projetos/main/logos/cievs.png" alt="CIEVS MT">
+<img src="https://raw.githubusercontent.com/luishgm/imagens-para-projetos/main/logos/rede-cievs.png" alt="Rede CIEVS">
+<img src="https://raw.githubusercontent.com/luishgm/imagens-para-projetos/main/logos/logo-governo-mato-grosso.png" alt="Governo MT">
+</div></header>
+<main class="container">
+<section class="hero"><h1>Painel de Monitoramento</h1><p>Intoxicação por suspeita de metanol — SES-MT</p></section>
+<div class="update">📅 <strong>Dados carregados da planilha atualizada em 06/08/2026. O painel será atualizado diariamente, de forma automática, às 11h, a partir dos dados apresentados pela área técnica da SUVSA-MT.</strong></div>
 
-  <main class="max-w-7xl mx-auto px-4 py-6 space-y-6">
-    <section class="bg-white border border-slate-200 border-l-4 border-l-orange-500 p-4">
-      <details>
-        <summary class="font-bold text-[#10245f] cursor-pointer">Como ler e interpretar este painel</summary>
-        <ol class="list-decimal ml-5 mt-3 space-y-1 text-sm text-slate-700">
-          <li>Comece pelos indicadores gerais e confirme o recorte aplicado.</li>
-          <li>Óbitos por metanol incluem somente casos confirmados com evolução “Óbito”.</li>
-          <li>O mapa representa o município de residência; o atendimento pode ocorrer em outro município.</li>
-          <li>“Não informado” representa lacuna da planilha-fonte, não ausência do evento.</li>
-          <li>A investigação deve priorizar bebida, marca, lote, local de consumo/aquisição e outros expostos.</li>
-        </ol>
-      </details>
-    </section>
-
-    <section class="grid grid-cols-2 lg:grid-cols-5 gap-3" id="kpis"></section>
-    <section id="alerts" class="space-y-2"></section>
-
-    <section class="bg-white border border-slate-200 p-4">
-      <div class="grid md:grid-cols-3 gap-3">
-        <label class="text-sm font-semibold">Classificação
-          <select id="filterClass" class="mt-1 w-full border rounded px-3 py-2"><option value="">Todas</option></select>
-        </label>
-        <label class="text-sm font-semibold">Município de residência
-          <select id="filterMun" class="mt-1 w-full border rounded px-3 py-2"><option value="">Todos</option></select>
-        </label>
-        <label class="text-sm font-semibold">Região de saúde
-          <select id="filterReg" class="mt-1 w-full border rounded px-3 py-2"><option value="">Todas</option></select>
-        </label>
-      </div>
-    </section>
-
-    <section class="grid lg:grid-cols-2 gap-5">
-      <div class="bg-white border border-slate-200 p-4">
-        <h2 class="text-lg font-bold text-[#10245f] mb-3">Distribuição territorial</h2>
-        <div id="map"></div>
-      </div>
-      <div class="bg-white border border-slate-200 p-4">
-        <h2 class="text-lg font-bold text-[#10245f] mb-3">Casos por município</h2>
-        <div id="municipios" class="space-y-2"></div>
-      </div>
-    </section>
-
-    <section class="bg-white border border-slate-200 p-4 overflow-x-auto">
-      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2 mb-3">
-        <div>
-          <h2 class="text-lg font-bold text-[#10245f]">Base de casos desidentificada</h2>
-          <p class="text-sm text-slate-500">Nomes e números SINAN não são publicados.</p>
-        </div>
-        <button id="download" class="bg-[#1b3281] text-white px-4 py-2 rounded font-semibold">Baixar recorte CSV</button>
-      </div>
-      <table class="min-w-full text-sm">
-        <thead class="bg-slate-100 text-left">
-          <tr>
-            <th class="p-2">Caso</th><th class="p-2">Notificação</th><th class="p-2">Município</th>
-            <th class="p-2">Região</th><th class="p-2">Classificação</th><th class="p-2">Evolução</th>
-            <th class="p-2">Bebida suspeita</th><th class="p-2">Investigação</th>
-          </tr>
-        </thead>
-        <tbody id="tbody"></tbody>
-      </table>
-    </section>
-
-    <footer class="text-center text-xs text-slate-500 border-t pt-4">
-      Fonte: planilha institucional “Casos Metanol MT — 2025”, recebida para atualização em 05/08/2026.
-      Municípios e grafias foram normalizados; campos ausentes foram mantidos como “Não informado”.
-    </footer>
-  </main>
-
+<section id="kpis" class="kpis"></section>
+<nav id="tabs" class="tabs"></nav>
+<section id="main"></section>
+<footer class="footer">Fonte: CIEVS-MT / SES-MT. Informações desidentificadas para proteção de dados pessoais.</footer>
+</main>
+<div id="modal" class="modal hidden"><div id="modal-card" class="modal-card"></div></div>
 <script>
-const COORDS = {
-  "Cuiabá":[-15.6014,-56.0979], "Várzea Grande":[-15.6467,-56.1325],
-  "Itanhangá":[-12.2312,-56.6395], "Nova Brasilândia":[-14.9612,-54.9685],
-  "Querência":[-12.6093,-52.1821], "Sorriso":[-12.5425,-55.7211],
-  "Água Boa":[-14.0491,-52.1600], "Nova Mutum":[-13.8370,-56.0743],
-  "Peixoto de Azevedo":[-10.2262,-54.9794], "Juína":[-11.3781,-58.7481],
-  "Novo Santo Antônio":[-12.2900,-50.9688]
-};
-const COLORS = {"Confirmado":"#c0392b","Em investigação":"#d4a017","Descartado":"#1e8449"};
-let allRows = [], filtered = [], map, layer;
-function esc(v){ return String(v ?? "").replace(/[&<>'"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[c])); }
-function cls(v){ return v==="Confirmado"?"confirmado":v==="Em investigação"?"investigacao":"descartado"; }
-function unique(field){ return [...new Set(allRows.map(r=>r[field]).filter(Boolean))].sort((a,b)=>a.localeCompare(b)); }
-function populateFilters(){
-  [["filterClass","classificacao"],["filterMun","municipio_residencia"],["filterReg","regional_saude"]].forEach(([id,field])=>{
-    const el=document.getElementById(id); unique(field).forEach(v=>{ const o=document.createElement("option"); o.value=v; o.textContent=v; el.appendChild(o); }); el.addEventListener("change", applyFilters);
-  });
-}
-function applyFilters(){
-  const c=document.getElementById("filterClass").value, m=document.getElementById("filterMun").value, r=document.getElementById("filterReg").value;
-  filtered=allRows.filter(x=>(!c||x.classificacao===c)&&(!m||x.municipio_residencia===m)&&(!r||x.regional_saude===r)); render();
-}
-function render(){
-  const confirmed=filtered.filter(r=>r.classificacao==="Confirmado"), investigated=filtered.filter(r=>r.classificacao==="Em investigação"), discarded=filtered.filter(r=>r.classificacao==="Descartado"), deaths=confirmed.filter(r=>r.evolucao==="Óbito");
-  const lethality=confirmed.length ? (100*deaths.length/confirmed.length).toFixed(1) : "0,0";
-  const data=[["Casos notificados",filtered.length],["Confirmados",confirmed.length],["Descartados",discarded.length],["Em investigação",investigated.length],["Óbitos entre confirmados",deaths.length]];
-  document.getElementById("kpis").innerHTML=data.map(([l,v])=>`<div class="kpi rounded p-4"><div class="text-2xl font-bold text-[#10245f]">${v}</div><div class="text-xs uppercase tracking-wide text-slate-500">${l}</div></div>`).join("");
-  let alerts=[]; if(investigated.length) alerts.push(`<div class="bg-amber-50 border border-amber-300 p-3 text-amber-900">Há <b>${investigated.length}</b> caso(s) em investigação.</div>`); if(deaths.length) alerts.push(`<div class="bg-red-50 border border-red-300 p-3 text-red-900">Foram registrados <b>${deaths.length}</b> óbito(s) entre confirmados; letalidade no recorte: <b>${lethality}%</b>.</div>`); document.getElementById("alerts").innerHTML=alerts.join("");
-  const mun={}; filtered.forEach(r=>{ const k=r.municipio_residencia||"Não informado"; mun[k]??={total:0,conf:0,inv:0,desc:0}; mun[k].total++; if(r.classificacao==="Confirmado")mun[k].conf++; else if(r.classificacao==="Em investigação")mun[k].inv++; else mun[k].desc++; });
-  document.getElementById("municipios").innerHTML=Object.entries(mun).sort((a,b)=>b[1].total-a[1].total).map(([m,v])=>`<div class="border rounded p-3"><div class="flex justify-between font-semibold"><span>${esc(m)}</span><span>${v.total}</span></div><div class="text-xs text-slate-500 mt-1">${v.conf} confirmado(s) · ${v.inv} em investigação · ${v.desc} descartado(s)</div></div>`).join("");
-  document.getElementById("tbody").innerHTML=filtered.map(r=>`<tr class="border-t"><td class="p-2 font-mono">${esc(r.id_caso)}</td><td class="p-2">${esc(r.data_notificacao)}</td><td class="p-2">${esc(r.municipio_residencia)}</td><td class="p-2">${esc(r.regional_saude)}</td><td class="p-2"><span class="badge ${cls(r.classificacao)}">${esc(r.classificacao)}</span></td><td class="p-2">${esc(r.evolucao)}</td><td class="p-2">${esc(r.bebida_suspeita)}</td><td class="p-2">${esc(r.investigacao_vigilancia)}</td></tr>`).join(""); renderMap(mun);
-}
-function renderMap(mun){
-  if(!map){ map=L.map("map").setView([-13.5,-55.5],5); L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{attribution:"&copy; OpenStreetMap"}).addTo(map); layer=L.layerGroup().addTo(map); }
-  layer.clearLayers(); Object.entries(mun).forEach(([name,v])=>{ if(!COORDS[name]) return; const rows=filtered.filter(r=>r.municipio_residencia===name); const color=rows.some(r=>r.classificacao==="Confirmado")?COLORS["Confirmado"]:rows.some(r=>r.classificacao==="Em investigação")?COLORS["Em investigação"]:COLORS["Descartado"]; L.circleMarker(COORDS[name],{radius:7+Math.min(v.total,8),color:"#fff",weight:2,fillColor:color,fillOpacity:.9}).bindPopup(`<b>${esc(name)}</b><br>${v.total} caso(s)<br>${v.conf} confirmado(s)<br>${v.inv} em investigação<br>${v.desc} descartado(s)`).addTo(layer); });
-}
-function download(){
-  const headers=["id_caso","data_notificacao","semana_epidemiologica","municipio_residencia","municipio_atendimento","regional_saude","sexo","idade","classificacao","criterio_confirmacao","evolucao","data_evolucao","exposicao_principal","bebida_suspeita","lote_suspeito","uso_concomitante_outras_substancias","sintomas","cid_suspeito","antidoto_indicado","antidoto_utilizado","tempo_ate_atendimento_horas","necessitou_uti","investigacao_vigilancia","observacao"];
-  const csv=Papa.unparse({fields:headers,data:filtered.map(r=>headers.map(h=>r[h]??""))}); const blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"}); const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="casos_metanol_recorte.csv"; a.click(); URL.revokeObjectURL(a.href);
-}
-document.getElementById("download").addEventListener("click",download);
-Papa.parse("data/casos_metanol.csv",{download:true,header:true,skipEmptyLines:true,complete:result=>{allRows=result.data;populateFilters();filtered=[...allRows];render();},error:err=>{document.getElementById("alerts").innerHTML=`<div class="bg-red-50 border border-red-300 p-3">Não foi possível carregar a base: ${esc(err.message)}</div>`;}});
+const CASOS=[{"id":1,"data":"18/10/2025","status":"CONFIRMADO","residencia":"Várzea Grande","internacao":"Cuiabá","sexo":"Masculino","idade":24,"gravidade":"Grave","descricao":"Resultado pericial positivo para metanol. Caso confirmado.","evolucao":"Óbito por intoxicação exógena confirmada por metanol","hospitalizou":"Sim","internado":"Não","antidoto":"Sim","obito":"Sim","tipoObito":"Óbito por metanol","dataObito":null,"observacoes":"","perfil":"Masculino, 24 anos"},{"id":2,"data":"20/10/2025","status":"DESCARTADO","residencia":"Cuiabá","internacao":"Cuiabá","sexo":"Feminino","idade":18,"gravidade":"Não se aplica","descricao":"Resultado pericial sem detecção de metanol. Caso descartado.","evolucao":"Caso descartado","hospitalizou":"Sim","internado":"Não","antidoto":"Não","obito":"Não","tipoObito":"Óbito por outras causas","dataObito":null,"observacoes":"","perfil":"Feminino, 18 anos"},{"id":3,"data":"23/10/2025","status":"DESCARTADO","residencia":"Várzea Grande","internacao":"Várzea Grande","sexo":"Masculino","idade":40,"gravidade":"Não se aplica","descricao":"Caso descartado conforme resultado pericial e investigação clínico-epidemiológica.","evolucao":"Caso descartado","hospitalizou":"Sim","internado":"Não","antidoto":"Sim","obito":"Sim","tipoObito":"Óbito por outras causas","dataObito":null,"observacoes":"","perfil":"Masculino, 40 anos"},{"id":4,"data":"07/10/2025","status":"DESCARTADO","residencia":"Sorriso","internacao":"Sorriso","sexo":"Masculino","idade":30,"gravidade":"Não se aplica","descricao":"Caso descartado para intoxicação por metanol.","evolucao":"Caso descartado","hospitalizou":"Sim","internado":"Não","antidoto":"Não informado","obito":"Sim","tipoObito":"Óbito por outras causas","dataObito":null,"observacoes":"Data do óbito não informada na base atualizada.","perfil":"Masculino, 30 anos"},{"id":5,"data":"16/10/2025","status":"DESCARTADO","residencia":"Água Boa","internacao":"Goiânia","sexo":"Masculino","idade":27,"gravidade":"Não se aplica","descricao":"Laudo pericial sem detecção de etanol, metanol ou ácido fórmico nas amostras analisadas.","evolucao":"Caso descartado","hospitalizou":"Sim","internado":"Não","antidoto":"Sim","obito":"Sim","tipoObito":"Óbito por outras causas","dataObito":null,"observacoes":"","perfil":"Masculino, 27 anos"},{"id":6,"data":"05/10/2025","status":"DESCARTADO","residencia":"Nova Mutum","internacao":"Nova Mutum","sexo":"Masculino","idade":30,"gravidade":"Não se aplica","descricao":"Resultado toxicológico negativo para metanol. Caso descartado.","evolucao":"Caso descartado","hospitalizou":"Sim","internado":"Não","antidoto":"Não","obito":"Sim","tipoObito":"Óbito por outras causas","dataObito":null,"observacoes":"","perfil":"Masculino, 30 anos"},{"id":7,"data":"03/10/2025","status":"DESCARTADO","residencia":"Peixoto de Azevedo","internacao":"Peixoto de Azevedo","sexo":"Feminino","idade":38,"gravidade":"Não se aplica","descricao":"Caso descartado pela equipe de vigilância.","evolucao":"Caso descartado","hospitalizou":"Sim","internado":"Não","antidoto":"Não","obito":"Sim","tipoObito":"Óbito por outras causas","dataObito":null,"observacoes":"","perfil":"Feminino, 38 anos"},{"id":8,"data":"24/10/2025","status":"DESCARTADO","residencia":"Várzea Grande","internacao":"Cuiabá","sexo":"Masculino","idade":30,"gravidade":"Não se aplica","descricao":"Caso descartado após avaliação clínico-laboratorial.","evolucao":"Caso descartado","hospitalizou":"Sim","internado":"Não","antidoto":"Sim","obito":"Sim","tipoObito":"Óbito por outras causas","dataObito":null,"observacoes":"","perfil":"Masculino, 30 anos"},{"id":9,"data":"04/11/2025","status":"CONFIRMADO","residencia":"Itanhangá","internacao":"Sorriso","sexo":"Feminino","idade":42,"gravidade":"Grave","descricao":"Metanol detectado em amostra biológica. Caso confirmado.","evolucao":"Óbito por intoxicação exógena confirmada por metanol","hospitalizou":"Sim","internado":"Não","antidoto":"Sim","obito":"Sim","tipoObito":"Óbito por metanol","dataObito":null,"observacoes":"Data do óbito não informada na base atualizada.","perfil":"Feminino, 42 anos"},{"id":10,"data":"04/11/2025","status":"CONFIRMADO","residencia":"Itanhangá","internacao":"Sorriso","sexo":"Masculino","idade":26,"gravidade":"Grave","descricao":"Metanol detectado em amostra biológica. Caso confirmado.","evolucao":"Óbito por intoxicação exógena confirmada por metanol","hospitalizou":"Sim","internado":"Não","antidoto":"Não","obito":"Sim","tipoObito":"Óbito por metanol","dataObito":null,"observacoes":"","perfil":"Masculino, 26 anos"},{"id":11,"data":"06/11/2025","status":"CONFIRMADO","residencia":"Várzea Grande","internacao":"Várzea Grande","sexo":"Feminino","idade":30,"gravidade":"Grave","descricao":"Metanol detectado em amostra biológica. Caso confirmado.","evolucao":"Óbito por intoxicação exógena confirmada por metanol","hospitalizou":"Não","internado":"Não","antidoto":"Não","obito":"Sim","tipoObito":"Óbito por metanol","dataObito":null,"observacoes":"Data do óbito não informada na base atualizada.","perfil":"Feminino, 30 anos"},{"id":12,"data":"17/11/2025","status":"CONFIRMADO","residencia":"Nova Brasilândia","internacao":"Barra do Garças","sexo":"Masculino","idade":33,"gravidade":"Grave","descricao":"Resultado positivo para metanol. Caso confirmado.","evolucao":"Óbito por intoxicação exógena confirmada por metanol","hospitalizou":"Sim","internado":"Não","antidoto":"Sim","obito":"Sim","tipoObito":"Óbito por metanol","dataObito":"07/12/2025","observacoes":"","perfil":"Masculino, 33 anos"},{"id":13,"data":"18/11/2025","status":"CONFIRMADO","residencia":"Querência","internacao":"Barra do Garças","sexo":"Masculino","idade":24,"gravidade":"Grave","descricao":"Resultado positivo para metanol. Caso confirmado.","evolucao":"Óbito por intoxicação exógena confirmada por metanol","hospitalizou":"Sim","internado":"Não","antidoto":"Não","obito":"Sim","tipoObito":"Óbito por metanol","dataObito":null,"observacoes":"Data do óbito não informada na base atualizada.","perfil":"Masculino, 24 anos"},{"id":14,"data":"04/12/2025","status":"DESCARTADO","residencia":"Juína","internacao":"Juína","sexo":"Feminino","idade":36,"gravidade":"Não se aplica","descricao":"Caso descartado. Evolução registrada como cura sem sequelas.","evolucao":"Cura sem sequelas","hospitalizou":"Sim","internado":"Não","antidoto":"Não informado","obito":"Não","tipoObito":"Não se aplica","dataObito":null,"observacoes":"","perfil":"Feminino, 36 anos"},{"id":15,"data":"05/12/2025","status":"DESCARTADO","residencia":"Várzea Grande","internacao":"Várzea Grande","sexo":"Feminino","idade":30,"gravidade":"Não se aplica","descricao":"Caso descartado após investigação.","evolucao":"Caso descartado","hospitalizou":"Sim","internado":"Não","antidoto":"Não informado","obito":"Sim","tipoObito":"Óbito por outras causas","dataObito":null,"observacoes":"","perfil":"Feminino, 30 anos"},{"id":16,"data":"06/06/2026","status":"CONFIRMADO","residencia":"Querência","internacao":"Querência","sexo":"Feminino","idade":37,"gravidade":"Grave","descricao":"Metanol presente no resultado laboratorial. Caso confirmado.","evolucao":"Óbito por intoxicação exógena confirmada por metanol","hospitalizou":"Sim","internado":"Não","antidoto":"Não informado","obito":"Sim","tipoObito":"Óbito por metanol","dataObito":"15/06/2026","observacoes":"","perfil":"Feminino, 37 anos"},{"id":17,"data":"12/07/2026","status":"CONFIRMADO","residencia":"Novo Santo Antônio","internacao":"Novo Santo Antônio","sexo":"Feminino","idade":31,"gravidade":"Grave","descricao":"Resultado pericial classificado como confirmado.","evolucao":"Óbito por intoxicação exógena confirmada por metanol","hospitalizou":"Não informado","internado":"Não informado","antidoto":"Não informado","obito":"Não","tipoObito":"Óbito por metanol","dataObito":null,"observacoes":"A base atualizada não informa evolução, hospitalização ou antídoto.","perfil":"Feminino, 31 anos"},{"id":18,"data":"03/08/2026","status":"EM INVESTIGAÇÃO","residencia":"Água Boa","internacao":"Água Boa","sexo":"Masculino","idade":42,"gravidade":"Grave","descricao":"Caso suspeito de intoxicação por metanol. Investigação em andamento.","evolucao":"Em investigação","hospitalizou":"Não informado","internado":"Não informado","antidoto":"Não informado","obito":"Não","tipoObito":"Não se aplica","dataObito":null,"observacoes":"A base atualizada não informa hospitalização ou antídoto.","perfil":"Masculino, 42 anos"},{"id":19,"data":"31/07/2026","status":"EM INVESTIGAÇÃO","residencia":"Querência","internacao":"Querência","sexo":"Masculino","idade":26,"gravidade":"Grave","descricao":"Caso suspeito de intoxicação por metanol. Investigação em andamento.","evolucao":"Em investigação","hospitalizou":"Não informado","internado":"Não informado","antidoto":"Não informado","obito":"Não","tipoObito":"Não se aplica","dataObito":null,"observacoes":"A base atualizada não informa hospitalização ou antídoto.","perfil":"Masculino, 26 anos"}];
+const COORDS={"Cuiabá": [-15.601, -56.097], "Várzea Grande": [-15.646, -56.132], "Sorriso": [-12.542, -55.721], "Água Boa": [-14.049, -52.16], "Nova Mutum": [-13.837, -56.074], "Peixoto de Azevedo": [-10.225, -54.979], "Itanhangá": [-12.255, -56.646], "Nova Brasilândia": [-14.961, -54.301], "Querência": [-12.593, -52.197], "Juína": [-11.3728, -58.7482], "Novo Santo Antônio": [-12.287, -50.968]};
+const STATUS={"CONFIRMADO":{icon:"⚠️",color:"#dc2626"},"EM INVESTIGAÇÃO":{icon:"🔍",color:"#eab308"},"DESCARTADO":{icon:"✅",color:"#15803d"}};
+let tab="geral",map=null,layer=null;
+const esc=v=>String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;");
+
+function groups(){return{confirmados:CASOS.filter(c=>c.status==="CONFIRMADO"),investigacao:CASOS.filter(c=>c.status==="EM INVESTIGAÇÃO"),descartados:CASOS.filter(c=>c.status==="DESCARTADO")}}
+function totals(){const g=groups();return{notificados:CASOS.length,confirmados:g.confirmados.length,investigacao:g.investigacao.length,descartados:g.descartados.length,obitosMetanol:CASOS.filter(c=>c.obito==="Sim"&&c.tipoObito==="Óbito por metanol").length,obitosOutras:CASOS.filter(c=>c.obito==="Sim"&&c.tipoObito==="Óbito por outras causas").length,internados:CASOS.filter(c=>c.internado==="Sim").length,antidoto:CASOS.filter(c=>c.antidoto==="Sim").length}}
+function distribution(){const d={};CASOS.forEach(c=>{if(!d[c.residencia])d[c.residencia]={municipio:c.residencia,total:0,confirmados:0,investigacao:0,descartados:0,obitosMetanol:0,obitosOutras:0};const x=d[c.residencia];x.total++;if(c.status==="CONFIRMADO")x.confirmados++;if(c.status==="EM INVESTIGAÇÃO")x.investigacao++;if(c.status==="DESCARTADO")x.descartados++;if(c.obito==="Sim"&&c.tipoObito==="Óbito por metanol")x.obitosMetanol++;if(c.obito==="Sim"&&c.tipoObito==="Óbito por outras causas")x.obitosOutras++});return Object.values(d).sort((a,b)=>b.total-a.total)}
+
+function renderKpis(){const t=totals(),items=[["Notificados",t.notificados,"👥","#2563eb"],["Confirmados",t.confirmados,"⚠️","#dc2626"],["Em investigação",t.investigacao,"🔍","#eab308"],["Descartados",t.descartados,"✅","#15803d"],["Óbitos por metanol",t.obitosMetanol,"☠️","#b91c1c"],["Óbitos por outras causas",t.obitosOutras,"⚫","#475569"],["Atualmente internados",t.internados,"🏥","#ea580c"],["Receberam antídoto",t.antidoto,"💉","#4f46e5"]];document.getElementById("kpis").innerHTML=items.map(([l,v,i,c])=>`<article class="kpi" style="--c:${c}"><div class="kpi-head"><span class="kpi-label">${l}</span><span class="kpi-icon">${i}</span></div><div class="kpi-value">${v}</div><div class="muted">${v===1?"caso":"casos"}</div></article>`).join("")}
+function renderTabs(){const ts=[["geral","Visão geral","#2563eb"],["confirmados","Confirmados","#dc2626"],["investigacao","Em investigação","#eab308"],["descartados","Descartados","#15803d"],["mapa","Mapa","#7c3aed"]];document.getElementById("tabs").innerHTML=ts.map(([id,l,c])=>`<button class="tab ${tab===id?"active":""}" style="--c:${c}" data-id="${id}">${l}</button>`).join("");document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{tab=b.dataset.id;renderTabs();renderMain()})}
+function death(c){if(c.obito==="Sim"&&c.tipoObito==="Óbito por metanol")return`<span class="death met">☠️ Óbito por metanol</span>`;if(c.obito==="Sim"&&c.tipoObito==="Óbito por outras causas")return`<span class="death other">⚫ Óbito por outras causas</span>`;return""}
+function card(c){const s=STATUS[c.status]||{icon:"•",color:"#64748b"};return`<article class="card" data-id="${c.id}"><div class="row"><span class="badge" style="--c:${s.color}">${s.icon} ${esc(c.status)}</span><div class="content"><p class="primary">📍 Residência: ${esc(c.residencia)}</p><p class="muted">🏥 Internação: ${esc(c.internacao)}</p><p class="muted">(${esc(c.perfil)})</p><p class="muted">Notificação: ${esc(c.data)}</p><p class="desc">${esc(c.descricao)}</p>${death(c)}<div class="info"><div><b>Evolução:</b> ${esc(c.evolucao)}</div><div><b>Gravidade:</b> ${esc(c.gravidade)}</div><div><b>Hospitalização:</b> ${esc(c.hospitalizou)}</div><div><b>Permanece hospitalizado:</b> ${esc(c.internado)}</div><div><b>Recebeu antídoto:</b> ${esc(c.antidoto)}</div><div><b>Óbito?</b> ${esc(c.obito)}</div><div><b>Tipo de óbito:</b> ${esc(c.tipoObito)}</div>${c.dataObito?`<div><b>Data do óbito:</b> ${esc(c.dataObito)}</div>`:""}</div></div></div></article>`}
+function section(title,data,color,icon){return`<section style="--c:${color}"><h2 class="section-title">${icon} ${title}</h2><div class="list">${data.map(card).join("")||"<p>Nenhum registro.</p>"}</div></section>`}
+function bind(){document.querySelectorAll(".card").forEach(x=>x.onclick=()=>openModal(Number(x.dataset.id)))}
+function renderMain(){const g=groups(),root=document.getElementById("main");if(tab==="geral"){root.innerHTML=`<div class="grid3">${section("Confirmados",g.confirmados,"#dc2626","⚠️")}${section("Em investigação",g.investigacao,"#eab308","🔍")}${section("Descartados",g.descartados,"#15803d","✅")}</div>`;bind();return}if(tab==="confirmados"){root.innerHTML=section("Casos confirmados",g.confirmados,"#dc2626","⚠️");bind();return}if(tab==="investigacao"){root.innerHTML=section("Casos em investigação",g.investigacao,"#eab308","🔍");bind();return}if(tab==="descartados"){root.innerHTML=section("Casos descartados",g.descartados,"#15803d","✅");bind();return}renderMap()}
+function renderMap(){const d=distribution(),root=document.getElementById("main");root.innerHTML=`<section class="map-card"><h2>📍 Distribuição espacial dos casos</h2><p>Distribuição por município de residência. Vermelho: município com caso confirmado; amarelo: caso em investigação; verde: somente casos descartados.</p><div id="map"></div><div class="cities">${d.map(m=>`<div class="city"><div class="city-head"><span>${esc(m.municipio)}</span><span>${m.total}</span></div><div class="city-sub">Confirmados: ${m.confirmados} · Investigação: ${m.investigacao} · Descartados: ${m.descartados} · Óbitos por metanol: ${m.obitosMetanol} · Outros óbitos: ${m.obitosOutras}</div></div>`).join("")}</div></section>`;if(typeof L==="undefined"){document.getElementById("map").innerHTML="<div style='padding:40px;text-align:center'>O painel abriu corretamente, mas o mapa depende de conexão com a internet.</div>";return}if(map){map.remove();map=null}map=L.map("map").setView([-13.7,-56],5);L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{attribution:"&copy; OpenStreetMap"}).addTo(map);const bounds=[];d.forEach(m=>{const p=COORDS[m.municipio];if(!p)return;bounds.push(p);const color=m.confirmados>0?"#dc2626":m.investigacao>0?"#eab308":"#15803d";L.circleMarker(p,{radius:7+m.total*2,color,fillColor:color,fillOpacity:.8,weight:2}).bindPopup(`<b>${m.municipio}</b><br>Total: ${m.total}<br>Confirmados: ${m.confirmados}<br>Em investigação: ${m.investigacao}<br>Descartados: ${m.descartados}<br>Óbitos por metanol: ${m.obitosMetanol}<br>Óbitos por outras causas: ${m.obitosOutras}`).addTo(map)});setTimeout(()=>{map.invalidateSize();if(bounds.length>1)map.fitBounds(bounds,{padding:[25,25]})},100)}
+function openModal(id){const c=CASOS.find(x=>x.id===id),s=STATUS[c.status]||{icon:"•",color:"#64748b"};document.getElementById("modal-card").innerHTML=`<div class="modal-head"><div><h2 style="margin:0">Detalhes do caso</h2><span class="badge" style="--c:${s.color};margin-top:10px">${s.icon} ${esc(c.status)}</span></div><button class="close" onclick="closeModal()">&times;</button></div>${death(c)}<div class="details"><div class="detail"><b>Residência</b>${esc(c.residencia)}</div><div class="detail"><b>Internação</b>${esc(c.internacao)}</div><div class="detail"><b>Perfil</b>${esc(c.perfil)}</div><div class="detail"><b>Notificação</b>${esc(c.data)}</div><div class="detail"><b>Gravidade</b>${esc(c.gravidade)}</div><div class="detail"><b>Evolução</b>${esc(c.evolucao)}</div><div class="detail"><b>Hospitalização</b>${esc(c.hospitalizou)}</div><div class="detail"><b>Permanece hospitalizado</b>${esc(c.internado)}</div><div class="detail"><b>Recebeu antídoto</b>${esc(c.antidoto)}</div><div class="detail"><b>Óbito?</b>${esc(c.obito)}</div><div class="detail"><b>Tipo de óbito</b>${esc(c.tipoObito)}</div><div class="detail"><b>Data do óbito</b>${esc(c.dataObito||"Não informada")}</div></div><div class="detail-desc">${esc(c.descricao)}</div>${c.observacoes?`<div class="notes"><b>Observações:</b> ${esc(c.observacoes)}</div>`:""}`;document.getElementById("modal").classList.remove("hidden")}
+function closeModal(){document.getElementById("modal").classList.add("hidden")}
+document.getElementById("modal").onclick=e=>{if(e.target.id==="modal")closeModal()};document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal()});
+renderKpis();renderTabs();renderMain();
 </script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" onload="if(tab==='mapa')renderMap()"></script>
 </body>
 </html>
