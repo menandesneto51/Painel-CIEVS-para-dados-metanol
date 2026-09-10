@@ -1,0 +1,50 @@
+name: Atualizar painel de metanol
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 11:00 em Cuiabá (UTC-4) = 15:00 UTC
+    - cron: '0 15 * * *'
+
+permissions:
+  contents: write
+
+jobs:
+  atualizar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Instalar dependências
+        run: pip install --disable-pip-version-check openpyxl gdown
+
+      - name: Atualizar painel a partir da planilha do Drive
+        env:
+          DRIVE_FILE_ID: 13sLXlRgOJFPWWxuRY6bbz0m8OJVG4-Gy
+          SHEET_NAME: Cadastro de Casos
+          INDEX_PATH: index.html
+        run: python scripts/update_from_drive.py
+
+      - name: Verificar alterações
+        id: changes
+        run: |
+          if git diff --quiet -- index.html; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Commit e push
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "chore: atualização automática do painel de metanol"
+          git push
