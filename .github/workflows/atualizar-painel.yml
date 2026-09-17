@@ -3,10 +3,8 @@ name: Atualizar painel de metanol
 on:
   workflow_dispatch:
   schedule:
-    # Verifica a planilha a cada hora. Só gera commit quando os dados mudarem.
-    # Mantém também uma verificação específica às 11:00 de Cuiabá (15:00 UTC)
-    # apenas como referência operacional; a execução horária já inclui esse horário.
-    - cron: '0 * * * *'
+    # Atualização diária às 11:00 em Cuiabá (UTC-4) = 15:00 UTC
+    - cron: '0 15 * * *'
 
 permissions:
   contents: write
@@ -56,5 +54,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html
-          git commit -m "chore: atualização automática do painel de metanol"
+          git commit -m "chore: atualização automática diária do painel de metanol"
           git push origin HEAD:main
