@@ -61,8 +61,9 @@ def get(ws, r, c):
 
 
 def download_sheet(target: Path):
-    url = f"https://drive.google.com/uc?id={DRIVE_FILE_ID}&export=download"
-    result = gdown.download(url=url, output=str(target), quiet=False, fuzzy=True)
+    # O ID já é conhecido, portanto não precisamos de fuzzy matching.
+    # A opção fuzzy não existe em todas as versões do gdown e causava a falha do workflow.
+    result = gdown.download(id=DRIVE_FILE_ID, output=str(target), quiet=False)
     if not result or not target.exists() or target.stat().st_size < 1000:
         raise RuntimeError("Não foi possível baixar a planilha do Google Drive. Verifique se o arquivo está acessível por link.")
 
@@ -130,7 +131,6 @@ def read_cases(xlsx_path: Path):
             idade = int(idade)
 
         sexo = str(get(ws, r, c_sexo) or "Não informado").strip()
-        perfil_idade = idade if idade not in (None, "") else "não informada"
 
         cases.append({
             "id": case_id,
