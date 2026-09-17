@@ -36,16 +36,28 @@ def fmt_date(v):
     return str(v).strip()
 
 
+def ensure_dimensions(ws):
+    # Alguns arquivos XLSX editados no Drive não gravam a dimensão da planilha.
+    # No modo read_only, openpyxl então expõe max_row/max_column como None.
+    if ws.max_row is None or ws.max_column is None:
+        ws.calculate_dimension(force=True)
+
+
 def find_header_row(ws):
-    for r in range(1, min(ws.max_row, 20) + 1):
-        vals = [norm(ws.cell(r, c).value) for c in range(1, min(ws.max_column, 30) + 1)]
+    ensure_dimensions(ws)
+    max_row = ws.max_row or 20
+    max_col = ws.max_column or 30
+    for r in range(1, min(max_row, 20) + 1):
+        vals = [norm(ws.cell(r, c).value) for c in range(1, min(max_col, 30) + 1)]
         if "id do caso" in vals and "status do caso" in vals:
             return r
     raise RuntimeError("Cabeçalho da aba 'Cadastro de Casos' não encontrado.")
 
 
 def build_header_map(ws, header_row):
-    return {norm(ws.cell(header_row, c).value): c for c in range(1, ws.max_column + 1) if ws.cell(header_row, c).value}
+    ensure_dimensions(ws)
+    max_col = ws.max_column or 30
+    return {norm(ws.cell(header_row, c).value): c for c in range(1, max_col + 1) if ws.cell(header_row, c).value}
 
 
 def col(h, *names):
@@ -61,8 +73,6 @@ def get(ws, r, c):
 
 
 def download_sheet(target: Path):
-    # O ID já é conhecido, portanto não precisamos de fuzzy matching.
-    # A opção fuzzy não existe em todas as versões do gdown e causava a falha do workflow.
     result = gdown.download(id=DRIVE_FILE_ID, output=str(target), quiet=False)
     if not result or not target.exists() or target.stat().st_size < 1000:
         raise RuntimeError("Não foi possível baixar a planilha do Google Drive. Verifique se o arquivo está acessível por link.")
@@ -73,6 +83,7 @@ def read_cases(xlsx_path: Path):
     if SHEET_NAME not in wb.sheetnames:
         raise RuntimeError(f"Aba obrigatória '{SHEET_NAME}' não encontrada. Abas disponíveis: {wb.sheetnames}")
     ws = wb[SHEET_NAME]
+    ensure_dimensions(ws)
     hr = find_header_row(ws)
     h = build_header_map(ws, hr)
 
@@ -109,7 +120,8 @@ def read_cases(xlsx_path: Path):
     seen_ids = set()
     skipped = []
 
-    for r in range(hr + 1, ws.max_row + 1):
+    max_row = ws.max_row or 0
+    for r in range(hr + 1, max_row + 1):
         raw_id = get(ws, r, c_id)
         if raw_id in (None, ""):
             continue
