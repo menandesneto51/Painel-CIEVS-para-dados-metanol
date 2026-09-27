@@ -23,6 +23,7 @@ orchestration_services:
   - "SPECIALIST_ORCHESTRATOR"
 
 decision_services:
+  - "DECISION_ORCHESTRATOR"
   - "INCIDENT_COORDINATOR"
   - "RISK_COMMUNICATION_SPECIALIST"
 
