@@ -31,3 +31,6 @@ core_runtime_specialists:
 
 domain_specialists:
   - "PHEM_SPECIALIST"
+
+engineering_services:
+  - "AI_SYSTEMS_SPECIALIST"
