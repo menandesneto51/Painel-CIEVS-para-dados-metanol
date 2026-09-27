@@ -25,3 +25,9 @@ orchestration_services:
 decision_services:
   - "INCIDENT_COORDINATOR"
   - "RISK_COMMUNICATION_SPECIALIST"
+
+core_runtime_specialists:
+  - "EPIDEMIOLOGIST"
+
+domain_specialists:
+  - "PHEM_SPECIALIST"
